@@ -342,5 +342,129 @@ report 'report json' 0 "$good2" --json
 has '"preload_words"'
 has '"bundles": 1'
 
+# --- --against: what changed without saying so -------------------------------------
+#
+# The only check that needs two trees, so these cases build a real repository
+# rather than a directory. Still hermetic: git init under the temp directory,
+# identity supplied per-command so no ambient config is read or written.
+
+git() { command git -c user.name=t -c user.email=t@example.com -c commit.gpgsign=false "$@"; }
+
+# gitcatalog <name> — a catalog committed in its own repository, under
+# <repo>/catalog. Echoes the repository root.
+gitcatalog() {
+  r=$T/repo-$1
+  c=$(catalog "src-$1")
+  mkdir -p "$r" && mv "$c" "$r/catalog"
+  git -C "$r" init -q >/dev/null 2>&1
+  git -C "$r" add -A >/dev/null 2>&1
+  git -C "$r" commit -qm base >/dev/null 2>&1
+  printf '%s' "$r"
+}
+
+# Nothing changed, so nothing owes a version.
+r=$(gitcatalog quiet)
+check 'unchanged tree is quiet' 0 "$r" --against HEAD
+has 'from 3 check(s)'
+lacks 'without a version change'
+
+# Without --against, git is never consulted and the check does not exist.
+check 'no ref, no versioning check' 0 "$r"
+has 'from 2 check(s)'
+lacks 'versioning'
+
+# The case this exists for: a bundle's files moved and its version did not.
+r=$(gitcatalog stale)
+printf 'Different rules entirely.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+check 'changed without a version change' 1 "$r" --against HEAD
+has 'without a version change'
+has 'widgets'
+has 'still 0.1.0'
+
+# Same edit, version moved. This is the half that has to stay quiet — a false
+# positive in something wired pre-merge gets the check switched off.
+printf -- '---\ntype: bundle\nversion: 0.1.1\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
+  > "$r/catalog/bundles/widgets/bundle.md"
+check 'changed with a version change' 0 "$r" --against HEAD
+lacks 'without a version change'
+
+# Editing bundle.md itself without moving the number is still a change.
+r=$(gitcatalog manifestonly)
+printf -- '---\ntype: bundle\nversion: 0.1.0\nentry_point: workflows/make-a-widget\ndescription: Widgets, described differently.\n---\n' \
+  > "$r/catalog/bundles/widgets/bundle.md"
+check 'bundle.md edited, version standing still' 1 "$r" --against HEAD
+has 'without a version change'
+
+# An untracked file is a change to that bundle. A pre-merge job never sees one,
+# but the author at a terminal does, and reporting clean there would be a lie.
+r=$(gitcatalog untracked)
+printf -- '---\ntype: policy\ntitle: More\ndescription: More rules.\n---\nWords.\n' \
+  > "$r/catalog/bundles/widgets/policy/more.md"
+check 'untracked file counts' 1 "$r" --against HEAD
+has 'without a version change'
+
+# A bundle that did not exist at the ref is new, and a new bundle owes no bump.
+r=$(gitcatalog newbundle)
+mkdir -p "$r/catalog/bundles/gadgets"
+printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Gadgets.\n---\n' \
+  > "$r/catalog/bundles/gadgets/bundle.md"
+check 'a new bundle owes no bump' 0 "$r" --against HEAD
+lacks 'without a version change'
+
+# A change outside every bundle is not a bundle's to account for.
+r=$(gitcatalog manifestchange)
+printf '\nProse under the manifest.\n' >> "$r/catalog/catalog.md"
+check 'catalog.md is not a bundle' 0 "$r" --against HEAD
+lacks 'without a version change'
+
+# Two bundles, one stale: the finding names the one that moved.
+r=$(gitcatalog twobundles)
+mkdir -p "$r/catalog/bundles/gadgets"
+printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Gadgets.\n---\n' \
+  > "$r/catalog/bundles/gadgets/bundle.md"
+git -C "$r" add -A >/dev/null 2>&1
+git -C "$r" commit -qm gadgets >/dev/null 2>&1
+printf 'More.\n' >> "$r/catalog/bundles/gadgets/bundle.md"
+check 'only the bundle that changed' 1 "$r" --against HEAD
+has 'gadgets'
+lacks 'widgets:'
+
+# A manifest that did not parse at the ref cannot be compared, and says so
+# rather than reporting either answer.
+r=$(gitcatalog wasbroken)
+printf -- '---\ntype: bundle\nversion: 0.1.0\nsee: [[nope]]\ndescription: x\n---\n' \
+  > "$r/catalog/bundles/widgets/bundle.md"
+git -C "$r" add -A >/dev/null 2>&1
+git -C "$r" commit -qm broken >/dev/null 2>&1
+printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Widgets.\n---\n' \
+  > "$r/catalog/bundles/widgets/bundle.md"
+check 'unparseable at the ref' 1 "$r" --against HEAD
+has 'could not be compared'
+
+# A ref that does not exist is a failure, never a pass. This is the one that
+# decides whether a misconfigured pre-merge job is green or red.
+r=$(gitcatalog badref)
+check 'unknown ref fails' 1 "$r" --against no-such-branch
+has 'could not compare'
+has 'no such commit'
+
+# ...and so is a catalog that is not in a repository at all.
+d=$(catalog notarepo)
+check 'not a git repository' 1 "$d" --against HEAD
+has 'could not compare'
+
+# --only versioning without a ref would run nothing and report zero findings.
+r=$(gitcatalog onlyref)
+check 'versioning needs a ref' 2 "$r" --only versioning
+has 'needs --against'
+
+printf 'Changed.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+check 'only versioning' 1 "$r" --only versioning --against HEAD
+has 'check=versioning'
+has 'from 1 check(s)'
+
+check 'versioning json' 1 "$r" --only versioning --against HEAD --json
+has '"check": "versioning"'
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ] || exit 1

@@ -1,0 +1,27 @@
+name: ci
+
+# A checker nothing checks is the failure this tool was written to argue
+# against, so it runs on its own pull requests before it runs on anyone else's.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor the README promises, and the current release. A tool with
+        # no dependencies has nothing to break between them except syntax, and
+        # this is what catches that.
+        python: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # `tests/run` also checks ../luma-catalog when it is present. It is not
+      # here, and the runner says so rather than counting it as a pass.
+      - run: sh tests/run

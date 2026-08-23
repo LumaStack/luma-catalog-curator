@@ -7,8 +7,9 @@ Tends a catalog. Validates what it holds, refuses what it cannot hold consistent
 **Anyone runs one.** This is not a luma maintainers' script — an organization with its own catalog needs the same checks over the same shapes, and it contains no knowledge of any particular catalog. If it ever grows a check that only makes sense here, that is a bug.
 
 ```bash
-luma-catalog-curator check ../acme-catalog     # 0 clean, 1 findings, 2 could not run
-luma-catalog-curator report ../acme-catalog    # what the catalog is becoming
+luma-catalog-curator check ../acme-catalog            # 0 clean, 1 findings, 2 could not run
+luma-catalog-curator check --against origin/main .    # ...and what changed without saying so
+luma-catalog-curator report ../acme-catalog           # what the catalog is becoming
 ```
 
 ## Gate or report is decided by the wiring, not by the tool
@@ -16,6 +17,26 @@ luma-catalog-curator report ../acme-catalog    # what the catalog is becoming
 `check` returns an exit code, so a pre-merge job makes it a gate and a person at a terminal makes it a report. The design document treats this as an either/or that has to be settled first; it does not, and settling it in the tool would be the tool deciding somebody else's process.
 
 What the tool does decide is that **an unenforced check is decoration** — so `check` is built to be wired, and `report` is built never to fail.
+
+## `--against <ref>` — the check that needs two trees
+
+Everything else here is answerable from the catalog on disk. **Whether a version is honest is not**: a version means nothing except relative to what the same bundle used to be, so that check runs only when you name something to compare with.
+
+```bash
+luma-catalog-curator check --against origin/main .
+```
+
+It reports **any bundle whose files changed while the `version` in its `bundle.md` did not**. An adopter decides whether to take a change by comparing versions, so a change that does not move the number is a change nobody downstream can see — and diffing a directory they did not write is their only alternative.
+
+**It does not judge the tier.** Major, minor or patch stays the author's call; this asks only whether the number moved at all, which is mechanical. A tool guessing the tier would be wrong in exactly the cases that matter.
+
+- **A bundle that did not exist at the ref is new**, and owes no bump.
+- **Untracked files count.** A pre-merge job never sees one, but the author at a terminal does, and reporting clean there would be a lie.
+- **A ref that will not resolve is a finding, not a skip.** A misconfigured pre-merge job goes red rather than green, because a comparison that could not be made is not a comparison that found nothing.
+
+Without `--against`, nothing here reads git at all.
+
+**Its subject is one bundle, which looks like foreman's half of the line — and is not.** The split this estate draws is runtime location: a check belongs here if it can only run where a catalog is *written*. This one needs the catalog's history, which an adopter does not have and foreman never sees. The rule *one bundle in isolation is foreman's* holds; a bundle against its own past is not in isolation.
 
 ## What it checks, and what it deliberately does not
 
@@ -75,7 +96,7 @@ ln -s "$PWD/luma-catalog-curator/bin/luma-catalog-curator" ~/.local/bin/
 
 **There are no releases and no tags**, so a clone tracks `main`. That is a real limitation shared with every tool in this estate rather than a preference.
 
-Run the tests with `sh tests/run`. They are hermetic — every case builds a throwaway catalog under a temp directory.
+Run the tests with `sh tests/run`. They are hermetic — every case builds a throwaway catalog under a temp directory, and the `--against` cases build a throwaway git repository. They run on every pull request here, on the oldest and newest supported Python.
 
 ## What blocks the rest of it
 
