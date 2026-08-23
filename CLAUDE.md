@@ -10,7 +10,7 @@ Everything below is vendored under `.luma/bundles/` and is part of this reposito
 - `.luma/bundles/luma/luma-tools/policy/what-each-tool-does.md` — The tools, the one job each performs, and when to use them. Read before installing or invoking any of them.
 - `.luma/bundles/luma/luma-tools/workflows/adopt-knowledge.md` — Take bundles from a catalog into a repository and make an agent aware of them. Use when setting a project up, when adding a capability, or when an agent keeps needing to be told where to look.
 
-### `luma/luma-maintainers` 0.3.0
+### `luma/luma-maintainers` 0.4.0
 
 Working on the luma tools themselves — the repositories and the boundary each defends, publishing to the universal catalog, and changing a type without making every tool upgrade at once.
 

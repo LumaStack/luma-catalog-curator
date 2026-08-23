@@ -83,17 +83,38 @@ failing.
 
 ```bash
 luma-catalog-curator check .
+luma-catalog-curator check --against origin/main .
 ```
 
 **This is the check no individual project could ever run**, which is why it
 belongs here rather than in `foreman inspect`. It reads a *set*: whether these
 declarations can all be true at once.
 
-**It is not wired to anything.** Publication is still not an event — a bundle
-becomes available by being committed to `main` — so nothing runs this unless
-somebody does. An unenforced check is decoration, and this one currently is.
+**`--against` is step 2 made mechanical.** It reports any bundle whose files
+changed while its `version` did not — the one part of getting a version honest
+that a tool can decide. The tier is still yours to judge; the number moving is
+not optional.
 
-## 6. Merge, then let adopters find it
+**It is wired, and that is what makes the merge the moment.** A required
+pre-merge job runs both of these and `luma-foreman inspect`, and a red run
+blocks the merge. Running them locally is how you find out before the job does,
+not an extra safety net you can skip.
+
+**The job pins each tool to a commit**, so a check's behaviour cannot move
+without somebody editing `.github/workflows/ci.yml`. The cost is real: a fix
+upstream does not arrive until the pin is bumped. That is the trade, and it is
+taken knowingly — a check that changes on its own is a check nobody can reason
+about.
+
+**Your own catalog is not wired by any of this.** The tool is the same
+everywhere; the enforcement is one repository's configuration. Copy the job.
+
+## 6. Merge — which is publication
+
+**Merging to `main` is the moment a bundle becomes available**, and nothing
+happens afterwards. There is no tag, no release and no registry: an adopter
+takes what `main` holds. That is why every check above runs before the merge
+rather than after it — after it, the thing is published.
 
 Merge commits rather than squash or rebase — the commit message is where the
 rationale lives, and squashing discards it.

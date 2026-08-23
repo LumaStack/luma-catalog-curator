@@ -51,10 +51,11 @@ overlap that stays unextracted until the shape is known.
 
 ## Status
 
-Early, and honest about two gaps. **Publication is not an event**, so every
-check designed to run "at publication" is a job somebody has to wire up and
-nothing enforces that they did. **Nothing has dependencies**, so roughly half
-the designed checks have nothing to check and are absent rather than stubbed.
+Early. **Publication is an event in `luma-catalog`** — merging to its `main`,
+gated by a required pre-merge job running `check` and `foreman inspect`. No
+other catalog is wired and this tool cannot wire one, which is the cost of
+*anyone runs one*. **Nothing has dependencies**, so roughly half the designed
+checks have nothing to check and are absent rather than stubbed.
 
 Python 3.11+, standard library only. The full design is in
 `luma-leader/docs/curator.md`.
