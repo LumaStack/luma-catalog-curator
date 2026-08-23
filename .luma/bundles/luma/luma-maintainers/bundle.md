@@ -1,6 +1,6 @@
 ---
 type: bundle
-version: 0.3.0
+version: 0.4.0
 published: 2026-08-23
 consumers: [organization]
 entry_point: policy/the-estate
@@ -63,6 +63,27 @@ no sensible project-level reading of *how the luma estate is maintained* —
 adopting it into a project would be adopting somebody else's internals.
 
 ## Version
+
+`0.4.0` — **publication is an event.** Merging to `luma-catalog`'s `main` is
+it, a required pre-merge job runs the checks, and a red run blocks the merge.
+[[publish-to-the-catalog]] says that instead of naming a command and admitting
+nothing runs it, and step 6 is renamed from *merge, then let adopters find it*
+to *merge — which is publication*.
+
+Minor rather than patch: a reader who correctly understood `0.3.0` believed the
+consistency check was theirs to remember. They would now expect the job to
+refuse the merge, and would read a red run as a defect in their change rather
+than a broken pipeline.
+
+**It also adds a check they have to satisfy**: `curator check --against` refuses
+a bundle whose files moved while its version stood still. That is step 2's rule,
+which this bundle already stated, made mechanical for the one part of it that is
+mechanical. The tier stays the author's judgement — nothing here decides that.
+
+**What has not changed:** no tag, no release, no notification. Adopters still
+find a newer version by running `adopt` again and nothing tells them to. And
+the enforcement is `luma-catalog`'s configuration rather than a property of the
+tools — anybody else's catalog is unwired until they copy the job.
 
 `0.3.0` — [[publish-to-the-catalog]] runs a command rather than describing one a
 person has to do by hand. `luma-catalog-curator` exists.

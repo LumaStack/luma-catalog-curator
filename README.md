@@ -18,6 +18,8 @@ luma-catalog-curator report ../acme-catalog           # what the catalog is beco
 
 What the tool does decide is that **an unenforced check is decoration** — so `check` is built to be wired, and `report` is built never to fail.
 
+**`luma-catalog` wires it as a gate**: a required pre-merge job runs `check`, `check --against origin/main` and `luma-foreman inspect`, and branch protection means a red run blocks the merge. That is one catalog's configuration rather than this tool's opinion, and it is the worked example to copy.
+
 ## `--against <ref>` — the check that needs two trees
 
 Everything else here is answerable from the catalog on disk. **Whether a version is honest is not**: a version means nothing except relative to what the same bundle used to be, so that check runs only when you name something to compare with.
@@ -100,7 +102,7 @@ Run the tests with `sh tests/run`. They are hermetic — every case builds a thr
 
 ## What blocks the rest of it
 
-**Publication is not an event.** Every check above is designed to run "at publication", and a bundle currently becomes available by being committed to `main`. So *reject at publication* has no moment to attach to. Until that is settled, this is a pre-merge job somebody has to wire up, and nothing enforces that they did.
+**Publication is an event in `luma-catalog`, and nowhere else by default.** *Reject at publication* had no moment to attach to; it has one now — merging to that catalog's `main` is publication, and a required pre-merge job runs these checks before it. **Any other catalog is unwired**, and this tool cannot wire one: the enforcement is a repository's configuration, and a tool that gated a catalog it was merely pointed at would be deciding somebody else's process. That is the cost of *anyone runs one*, and `luma/luma-maintainers`' publish workflow is the copyable example.
 
 **Nothing has dependencies.** Roughly half the designed checks — joint satisfiability, requiring a reason for a narrow constraint, cross-bundle links at resolved versions — have nothing to check. They are absent rather than stubbed.
 
