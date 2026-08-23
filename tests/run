@@ -1,0 +1,37 @@
+#!/bin/sh
+# Run every test suite. Exits non-zero if any fail.
+#
+#   sh tests/run
+#
+# Every suite is hermetic — each builds throwaway catalogs under a temp
+# directory and reads nothing real.
+set -u
+
+cd "$(dirname "$0")/.." || exit 2
+status=0
+
+for suite in tests/*-test.sh; do
+  printf '\n== %s\n' "$suite"
+  if sh "$suite"; then :; else status=1; fi
+done
+
+# The curator must pass its own checks against the catalog it was built for.
+# This is not self-inspection the way foreman inspects itself — there is no
+# catalog in this repository — so it is skipped when the sibling is absent
+# rather than being reported as a pass.
+printf '\n== luma-catalog against the real catalog\n'
+if [ -d ../luma-catalog ]; then
+  if ./bin/luma-catalog-curator check ../luma-catalog >/dev/null 2>&1; then
+    printf 'clean\n'
+  else
+    printf 'FINDINGS:\n'
+    ./bin/luma-catalog-curator check ../luma-catalog 2>&1 | sed 's/^/  /'
+    status=1
+  fi
+else
+  printf 'skipped — ../luma-catalog is not checked out\n'
+fi
+
+printf '\n'
+[ "$status" -eq 0 ] && printf 'all suites passed\n' || printf 'FAILURES\n'
+exit "$status"
