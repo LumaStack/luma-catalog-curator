@@ -1,7 +1,7 @@
 ---
 type: policy
 title: What each luma tool does
-description: The tools, the one job each performs, and the rule that decides which one you are talking to. Read before installing or invoking any of them.
+description: The tools, the one job each performs, and when to use them. Read before installing or invoking any of them.
 preload: mandatory
 ---
 
@@ -13,7 +13,7 @@ preload: mandatory
 | activity | who does it | tool |
 | --- | --- | --- |
 | **adopt knowledge into a project, and keep it working** | everyone | **`foreman`** |
-| **tend a catalog you publish** | the few who publish one | **`curator`** — named, unbuilt |
+| **tend a catalog you publish** | the few who publish one | **`luma-catalog-curator`** |
 | **build the tools themselves** | their maintainers | ordinary development; no luma tool |
 
 **Most people only ever need the first row.** A catalog is an endgame rather
@@ -27,23 +27,21 @@ adopters never publish anything.
 | **`luma-foreman`** | adopts bundles into a repository and projects them at agents | **working** |
 | **`luma-clarify`** | resolves ambiguity in written requirements | working |
 | **`luma-backlog`** | keeps a project's intended work | working |
-| **`luma-curator`** | validates a catalog and refuses what it cannot hold | **named, unbuilt** |
+| **`luma-catalog-curator`** | checks a catalog for what only a catalog can see, and reports what it costs | **working** |
 | **`luma-leader`** | not a tool. A place an organization keeps what outlives one project | n/a |
 
 **`luma-leader` and `luma-foreman` are role metaphors and the rest are not**,
 which is deliberate rather than untidy. Names of tools added from 2026-08-23
-onward say the verb they perform; the two that predate the rule keep their
-names, because a convention requiring everything to be renamed before it can be
-adopted is one nobody adopts.
+onward say the verb they perform.
 
-## Engines are installed and never forked. Everything else is yours
+## Engines are installed; not forked. Everything else is yours
 
 **That single line is what tells a tool from content**, and it settles most
 questions about what you may change.
 
 | | | may you fork it |
 | --- | --- | --- |
-| **engines** | `foreman`, `clarify`, `backlog`, `curator` | **no.** Upgrade them; do not diverge |
+| **engines** | `foreman`, `clarify`, `backlog`, `catalog-curator` | **no.** Upgrade them; do not diverge |
 | **content** | catalogs, bundles, your headquarters, your projects | **yes. All of it is yours** |
 
 **An adopted bundle is content and is still not yours to edit in place.** It is

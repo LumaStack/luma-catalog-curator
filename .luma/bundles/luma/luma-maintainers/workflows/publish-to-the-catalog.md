@@ -81,8 +81,17 @@ could: a bundle both mandated and deprecated, or a starter pinning a version the
 same catalog's own mandate forbids — which would make every new project born
 failing.
 
-**Nothing checks this today.** It is `curator`'s job and `curator` does not
-exist, so for now it is read by a person.
+```bash
+luma-catalog-curator check .
+```
+
+**This is the check no individual project could ever run**, which is why it
+belongs here rather than in `foreman inspect`. It reads a *set*: whether these
+declarations can all be true at once.
+
+**It is not wired to anything.** Publication is still not an event — a bundle
+becomes available by being committed to `main` — so nothing runs this unless
+somebody does. An unenforced check is decoration, and this one currently is.
 
 ## 6. Merge, then let adopters find it
 

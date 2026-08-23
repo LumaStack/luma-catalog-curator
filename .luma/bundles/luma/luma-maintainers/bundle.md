@@ -1,6 +1,6 @@
 ---
 type: bundle
-version: 0.2.0
+version: 0.3.0
 published: 2026-08-23
 consumers: [organization]
 entry_point: policy/the-estate
@@ -64,6 +64,13 @@ adopting it into a project would be adopting somebody else's internals.
 
 ## Version
 
+`0.3.0` — [[publish-to-the-catalog]] runs a command rather than describing one a
+person has to do by hand. `luma-catalog-curator` exists.
+
+**The honest part is what it still says afterwards.** The check is built and
+wired to nothing, because publication is not an event — so the workflow now
+names the command *and* says that nothing runs it unless somebody does.
+
 `0.2.0` — the tool that checks a catalog is **`curator`**, named on 2026-08-23
 by firing a re-open trigger while renaming was still free. Same reasoning as
 `luma/luma-tools` `0.2.0`: naming a thing the previous version called unnamed
@@ -77,5 +84,5 @@ a tool release, because **no tool has a release** — installation is a clone an
 a symlink, nothing is tagged, and writing the procedure before the capability
 would be describing something that does not happen. And the catalog's own
 consistency check is named in [[publish-to-the-catalog]] as a thing a person
-does, because the tool that should do it does not exist and does not yet have a
-name.
+names a command instead of a person, but nothing runs it: publication is still
+not an event, so the check is available rather than enforced.
