@@ -1,6 +1,6 @@
 ---
 type: bundle
-version: 0.2.0
+version: 0.3.1
 published: 2026-08-23
 consumers: [project, organization]
 entry_point: workflows/adopt-knowledge
@@ -55,6 +55,24 @@ most embarrassing.
 
 ## Version
 
+`0.3.1` — wording in [[what-each-tool-does]]: a tighter description, a shorter
+heading, and a clause about renaming conventions cut as rationale nobody needed
+at that point.
+
+Patch because no normative sentence moved. A reader who correctly understood
+`0.3.0` behaves identically — which is the test, and it is the tier most easily
+got wrong for prose. Benjamin's wording.
+
+`0.3.0` — **`luma-catalog-curator` exists.** Built the same day it was named, so
+`0.2.0` was accurate for a few hours.
+
+It also corrects the name `0.2.0` guessed at. That version wrote `luma-curator`
+in the tool table while the repository became `luma-catalog-curator` — the
+qualifier was added deliberately, to recover the guessability `curator` gave up
+when it beat `cataloger`. **A bundle naming a command nobody can install is
+worse than one admitting it does not exist yet**, so this is the correction that
+mattered most.
+
 `0.2.0` — the catalog tool has a name: **`curator`**. It still does not exist.
 
 Minor rather than patch because a reader who correctly understood `0.1.0` would
@@ -63,7 +81,7 @@ call it. Naming it changes what somebody writes and asks for.
 
 `0.1.0`. Written the day adoption and projection first worked end to end, from
 one estate's practice with no outside adopter. Two things in it are known to be
-provisional: **`curator` is named and does not exist**, so the table in
-[[what-each-tool-does]] lists a tool nobody can install yet — deliberately, so
-that the gap is visible rather than absent; and **no tool has a release or a
-tag**, so installation tracks `main` and nothing can be pinned.
+provisional: **no tool has a release or a tag**, so installation tracks `main`
+and nothing can be pinned — which is now owed to three tools rather than two.
+And **`luma-catalog-curator` is built but wired to nothing**: publication is not
+an event, so its checks run when somebody remembers.

@@ -5,13 +5,13 @@
 # passing silently, which is the one failure it exists to prevent.
 
 ["luma/luma-maintainers"]
-version  = "0.2.0"
+version  = "0.3.0"
 source   = "https://github.com/LumaStack/luma-catalog.git"
-commit   = "c1d1ce67a462a03ade8b3afb16498e76c39b7b99"
-checksum = "sha256:f8e18cdc24c2a292838e81b276c4353907f25b53ea7d5d6c4d2f879f83fe362e"
+commit   = "21e2e60ab8f7c9121d1a2a34278f982b8a6bae09"
+checksum = "sha256:fd196dec8bf30055cbae67dc8cada2822c5c18ecf08a3ca99ead5dfe916452ce"
 
 ["luma/luma-tools"]
-version  = "0.2.0"
+version  = "0.3.1"
 source   = "https://github.com/LumaStack/luma-catalog.git"
-commit   = "c1d1ce67a462a03ade8b3afb16498e76c39b7b99"
-checksum = "sha256:becdd88f6df63f2802f14124c0c7c9f5274bc2f3f7bb46c6065427802b858b5a"
+commit   = "21e2e60ab8f7c9121d1a2a34278f982b8a6bae09"
+checksum = "sha256:69de9958cc9b9b77165c6b874391e02855144ea7593be6832d8e22cdab6458b4"
