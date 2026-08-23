@@ -1,6 +1,7 @@
 # luma-catalog-curator
 
-Tends a catalog. Validates what it holds, refuses what it cannot hold consistently, and reports what it is becoming.
+> **Tends a catalog.**<br>
+> Validates what it holds, refuses what it cannot hold consistently, and reports what it is becoming.
 
 > **Status:** early. The checks that need bundle dependencies are absent because nothing has dependencies yet.
 
