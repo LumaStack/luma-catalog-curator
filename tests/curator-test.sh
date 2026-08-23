@@ -448,6 +448,70 @@ check 'unknown ref fails' 1 "$r" --against no-such-branch
 has 'could not compare'
 has 'no such commit'
 
+# --- tier honesty: surfaced, never refused -------------------------------------
+#
+# These are notices. A heuristic wired to a merge gate is a heuristic that gets
+# switched off, so every case below must exit 0 while still saying something.
+
+bump() {
+  printf -- '---\ntype: bundle\nversion: %s\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
+    "$2" > "$1/catalog/bundles/widgets/bundle.md"
+}
+
+# A patch that edits a `must` is the dangerous tier: two characters, the diff of
+# a typo, a complete reversal.
+r=$(gitcatalog normative)
+printf 'A widget must not be blue.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 0.1.1
+check 'patch touching a normative sentence' 0 "$r" --against HEAD
+has 'NOTICE'
+has 'normative sentence'
+has 'must not be blue'
+has 'never fails a run'
+
+# The same edit as a minor is the author saying behaviour changed. No notice.
+r=$(gitcatalog normativeminor)
+printf 'A widget must not be blue.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 0.2.0
+check 'minor touching a normative sentence' 0 "$r" --against HEAD
+lacks 'normative sentence'
+
+# Ordinary prose on a patch stays quiet — the false-positive half.
+r=$(gitcatalog ordinary)
+printf 'Widgets are usually round.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 0.1.1
+check 'patch touching ordinary prose' 0 "$r" --against HEAD
+lacks 'normative sentence'
+
+# Removing a document in a non-major release is a signal, not a verdict.
+r=$(gitcatalog removal)
+rm "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 0.2.0
+check 'minor removing a document' 0 "$r" --against HEAD
+has 'removed a document'
+has 'rules.md'
+
+# In a major, removal is what major is for. Nothing to say.
+r=$(gitcatalog majorremoval)
+rm "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 1.0.0
+check 'major removing a document' 0 "$r" --against HEAD
+lacks 'removed a document'
+
+# A version scheme the comparator does not understand must not be guessed at.
+r=$(gitcatalog oddscheme)
+printf 'A widget must not be blue.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 2026-08-23
+check 'unfamiliar version scheme is not judged' 0 "$r" --against HEAD
+lacks 'normative sentence'
+
+# A notice alone never changes the exit code, even alongside a real finding.
+r=$(gitcatalog both)
+printf 'A widget must not be blue.\n' >> "$r/catalog/bundles/widgets/policy/rules.md"
+bump "$r" 0.1.1
+check 'notice alone exits 0' 0 "$r" --against HEAD
+has '0 finding(s) and 1 notice(s)'
+
 # ...and so is a catalog that is not in a repository at all.
 d=$(catalog notarepo)
 check 'not a git repository' 1 "$d" --against HEAD
