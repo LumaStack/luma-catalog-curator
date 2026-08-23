@@ -24,6 +24,7 @@ def render(result: Result, as_json: bool) -> int:
             json.dumps(
                 {
                     "findings": [f.as_dict() for f in result.sorted_findings()],
+                    "notices": [n.as_dict() for n in result.notices],
                     "skipped": [s.as_dict() for s in result.skipped],
                     "ran": result.ran,
                 },
@@ -41,6 +42,15 @@ def render(result: Result, as_json: bool) -> int:
             print(f"{'':10}{finding.remedy}")
         print()
 
+    for notice in result.notices:
+        print(f"{'NOTICE':<8}{notice.summary}")
+        print(f"{'':10}check={notice.check}")
+        for line in notice.evidence:
+            print(f"{'':12}{line}")
+        if notice.remedy:
+            print(f"{'':10}{notice.remedy}")
+        print()
+
     for skip in result.skipped:
         print(f"SKIPPED   {skip.check}: {skip.reason}")
         if skip.remedy:
@@ -48,9 +58,12 @@ def render(result: Result, as_json: bool) -> int:
         print()
 
     print(
-        f"{len(result.findings)} finding(s) from {len(result.ran)} check(s) that "
-        f"ran; {len(result.skipped)} check(s) could not run."
+        f"{len(result.findings)} finding(s) and {len(result.notices)} notice(s) "
+        f"from {len(result.ran)} check(s) that ran; {len(result.skipped)} "
+        f"check(s) could not run."
     )
+    if result.notices:
+        print("A notice is for a second reader, and never fails a run.")
     if result.skipped:
         print("A skipped check is not a pass.")
     return 1 if result.findings else 0

@@ -30,7 +30,12 @@ luma-catalog-curator check --against origin/main .
 
 It reports **any bundle whose files changed while the `version` in its `bundle.md` did not**. An adopter decides whether to take a change by comparing versions, so a change that does not move the number is a change nobody downstream can see — and diffing a directory they did not write is their only alternative.
 
-**It does not judge the tier.** Major, minor or patch stays the author's call; this asks only whether the number moved at all, which is mechanical. A tool guessing the tier would be wrong in exactly the cases that matter.
+**It does not judge the tier — it points at two signals and lets you judge.** Major, minor or patch stays the author's call. But two things are mechanical to spot and worth a second reader, so both are reported as **notices**, which print as loudly as a finding and never fail a run:
+
+- **A patch that edits a normative sentence.** `must not` → `must` is two characters, the diff of a typo, and a complete reversal — and *"patch: fixed wording"* gets approved in seconds. The check cannot know whether the meaning changed; it can know the edit landed where meaning lives.
+- **A non-major release that removes a document.** Subtraction signals major and is not a rule: removing a carve-out is also how prose gets stronger.
+
+*Surface, never refuse* is what the version design asks for, and it is why these cannot fail a build. **A heuristic wired to a merge gate is a heuristic that gets switched off.**
 
 - **A bundle that did not exist at the ref is new**, and owes no bump.
 - **Untracked files count.** A pre-merge job never sees one, but the author at a terminal does, and reporting clean there would be a lie.

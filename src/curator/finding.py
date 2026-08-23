@@ -51,6 +51,35 @@ class Finding:
 
 
 @dataclass(frozen=True)
+class Notice:
+    """Something worth a second reader's eye that must not fail a build.
+
+    **The version design asks for exactly this distinction** — *"reject
+    outright"* for defects that are yes-or-no, *"surface, never refuse"* for
+    signals that are usually right and sometimes the improvement. A heuristic
+    wired to a merge gate is a heuristic that gets switched off, and the ones
+    here are heuristics: a removal can be how prose gets stronger, and a `must`
+    can appear in a sentence describing somebody else's rule.
+
+    So a notice is printed as loudly as a finding and counts for nothing in the
+    exit code.
+    """
+
+    check: str
+    summary: str
+    evidence: tuple[str, ...] = ()
+    remedy: str = ""
+
+    def as_dict(self) -> dict[str, object]:
+        return {
+            "check": self.check,
+            "summary": self.summary,
+            "evidence": list(self.evidence),
+            "remedy": self.remedy,
+        }
+
+
+@dataclass(frozen=True)
 class Skipped:
     """A check that could not run, and why. Rendered as loudly as a finding."""
 
@@ -65,11 +94,13 @@ class Skipped:
 @dataclass
 class Result:
     findings: list[Finding] = field(default_factory=list)
+    notices: list[Notice] = field(default_factory=list)
     skipped: list[Skipped] = field(default_factory=list)
     ran: list[str] = field(default_factory=list)
 
     def extend(self, other: "Result") -> None:
         self.findings.extend(other.findings)
+        self.notices.extend(other.notices)
         self.skipped.extend(other.skipped)
         self.ran.extend(other.ran)
 
