@@ -6,22 +6,9 @@ Everything below is vendored under `.luma/bundles/` and is part of this reposito
 
 **Read these before working here.** Their bundles declare them `preload: mandatory`, which is the strongest claim a bundle can make on a reader's attention.
 
-- `.luma/bundles/luma/decision-records/workflows/record-decision.md` — Find or establish where this project keeps decisions, then write one. Use when a position is settled, when an irreversible change is proposed, or when asked where decisions live.
 - `.luma/bundles/luma/luma-maintainers/policy/the-estate.md` — The six repositories, the boundary each one defends, and the rule that decides where a new thing goes. Read before adding anything to any of them.
 - `.luma/bundles/luma/luma-tools/policy/what-each-tool-does.md` — The tools, the one job each performs, and when to use them. Read before installing or invoking any of them.
 - `.luma/bundles/luma/luma-tools/workflows/adopt-knowledge.md` — Take bundles from a catalog into a repository and make an agent aware of them. Use when setting a project up, when adding a capability, or when an agent keeps needing to be told where to look.
-
-### `luma/decision-records` 0.2.1
-
-Decisions recorded with their reasoning, deferred alternatives, and re-open triggers. Spent decisions are archived rather than deleted.
-
-In `.luma/bundles/luma/decision-records/`:
-
-- `policy/decision-guidelines.md` (policy) — When to record a decision, what makes one worth reading years later, and what you may edit once it is settled.
-- `workflows/find-decision.md` (workflow) — Locate a decision record from a number, a title, or a link that no longer resolves. Use whenever a citation points at nothing, or before concluding that something was never decided.
-- `workflows/migrate-decisions.md` (workflow) — Split a single DECISIONS.md into individual records, reconstruct what supersedes what, repoint everything that linked to the file, and only then remove it. Use once per project that has one.
-- `workflows/prune-archived-decisions.md` (workflow) — Permanently remove decision records that have been archived longer than the retention period. Only reaches `archived/`, never a live decision. Rarely the right call.
-- `workflows/record-decision.md` (workflow) **[read first]** — Find or establish where this project keeps decisions, then write one. Use when a position is settled, when an irreversible change is proposed, or when asked where decisions live.
 
 ### `luma/luma-maintainers` 0.5.1
 
