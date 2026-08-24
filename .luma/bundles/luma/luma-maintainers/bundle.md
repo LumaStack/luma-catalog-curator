@@ -1,6 +1,6 @@
 ---
 type: bundle
-version: 0.4.0
+version: 0.5.1
 published: 2026-08-23
 consumers: [organization]
 entry_point: policy/the-estate
@@ -63,6 +63,23 @@ no sensible project-level reading of *how the luma estate is maintained* —
 adopting it into a project would be adopting somebody else's internals.
 
 ## Version
+
+`0.5.1` — *standard* becomes *policy*. Wording only: `policy` is the document
+type the format defines and the word this estate uses everywhere else, and
+`standard` was deliberately freed for the organization level rather than left
+doing double duty.
+
+Patch because a reader who correctly understood `0.5.0` behaves identically.
+The subject noun changed; nothing it requires, permits or forbids did.
+
+`0.5.0` — a repository does not vendor its own bundles into itself.
+
+**Written after this catalog did exactly that.** It adopted two of its own
+bundles, producing byte-identical duplicates in one repository, which
+contradicts *reference within a repository, vendor across them*. The section
+states the rule and is honest about what it costs: a catalog gets no projection,
+because projecting what a repository *publishes* needs a selection mechanism
+that does not exist yet.
 
 `0.4.0` — **publication is an event.** Merging to `luma-catalog`'s `main` is
 it, a required pre-merge job runs the checks, and a red run blocks the merge.
