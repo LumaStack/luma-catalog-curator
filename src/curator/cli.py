@@ -24,7 +24,7 @@ USAGE = """usage: luma-catalog-curator <job> [args]
                      ...and with --against <ref>, what changed without saying so
   report [<path>]    what the catalog is becoming — never fails
 
-A catalog is found at <path>/catalog.md or <path>/catalog/catalog.md, and
+A catalog is found at <path>/CATALOG.md or <path>/catalog/CATALOG.md, and
 defaults to the current directory.
 
 Run `luma-catalog-curator <job> --help` for a job's own options."""

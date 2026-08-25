@@ -53,8 +53,8 @@ def run(cat: Catalog) -> Result:
     if declared and not declared.endswith("catalog"):
         bad(
             "medium",
-            f"catalog.md declares type {declared}",
-            [f"catalog.md: type: {declared}"],
+            f"CATALOG.md declares type {declared}",
+            [f"CATALOG.md: type: {declared}"],
             "The document at a catalog's root is the thing authoritative about "
             "starters, requires and the namespace. A different type means "
             "nothing will read it as a catalog.",
@@ -64,7 +64,7 @@ def run(cat: Catalog) -> Result:
         bad(
             "medium",
             "this catalog declares no namespace",
-            ["catalog.md"],
+            ["CATALOG.md"],
             "Every bundle is addressed <namespace>/<name>, and the namespace "
             "belongs to the catalog. Without one, an adopter has to be told out "
             "of band what to call what they took — and a name learned out of "
@@ -76,7 +76,7 @@ def run(cat: Catalog) -> Result:
             Skipped(
                 CHECK,
                 "this catalog publishes no bundles",
-                "Nothing named bundle.md under bundles/.",
+                "Nothing named BUNDLE.md under bundles/.",
             )
         )
         return result

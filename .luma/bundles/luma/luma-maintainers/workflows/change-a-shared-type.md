@@ -66,7 +66,7 @@ Documents inside bundles are safe by construction, because each bundle's
 documents are checked against the copy that travelled with them.
 
 **Out-of-bundle documents have no such scope.** Something reading every
-project's `.luma/project.md` while half declare the old field and half the new
+project's `.luma/PROJECT.md` while half declare the old field and half the new
 gets a result where every file parses, nothing errors, and **the aggregate is
 silently incomplete.**
 

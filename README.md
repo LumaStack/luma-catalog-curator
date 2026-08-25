@@ -29,7 +29,7 @@ Everything else here is answerable from the catalog on disk. **Whether a version
 luma-catalog-curator check --against origin/main .
 ```
 
-It reports **any bundle whose files changed while the `version` in its `bundle.md` did not**. An adopter decides whether to take a change by comparing versions, so a change that does not move the number is a change nobody downstream can see — and diffing a directory they did not write is their only alternative.
+It reports **any bundle whose files changed while the `version` in its `BUNDLE.md` did not**. An adopter decides whether to take a change by comparing versions, so a change that does not move the number is a change nobody downstream can see — and diffing a directory they did not write is their only alternative.
 
 **It does not judge the tier — it points at two signals and lets you judge.** Major, minor or patch stays the author's call. But two things are mechanical to spot and worth a second reader, so both are reported as **notices**, which print as loudly as a finding and never fail a run:
 
@@ -87,7 +87,7 @@ No package manager reports this, because no package manager has a context budget
 
 ## Reading YAML without a dependency
 
-`catalog.md` holds nested maps and lists of maps, so the flat `key: value` subset foreman uses cannot read it. This carries its own reader, and **it refuses rather than guesses.**
+`CATALOG.md` holds nested maps and lists of maps, so the flat `key: value` subset foreman uses cannot read it. This carries its own reader, and **it refuses rather than guesses.**
 
 The estate already has three partial frontmatter parsers and nothing that makes them agree. The danger is not the count — it is that a partial parser *silently produces a wrong answer* for input it half-understands, so two tools reach opposite conclusions about one file and nothing surfaces that they read different grammars.
 

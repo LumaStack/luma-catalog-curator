@@ -1,7 +1,7 @@
 ---
 type: bundle
-version: 0.3.1
-published: 2026-08-23
+version: 0.4.0
+published: 2026-08-25
 consumers: [project, organization]
 entry_point: workflows/adopt-knowledge
 description: Using the luma tools — which one does what, getting them onto a machine, and the adopt-then-project loop that puts knowledge in front of an agent.
@@ -54,6 +54,13 @@ which is the same gap adoption exists to close, left open in the one place it is
 most embarrassing.
 
 ## Version
+
+`0.4.0` — **the manifest is `BUNDLE.md`.** Reserved markdown files are now
+ALL CAPS across the estate, because nobody types all caps by accident: a file
+becomes load-bearing only when somebody deliberately made it so, and writing
+`bundle.md` now fails in the safe direction — ignored rather than silently wired
+into machinery. Minor rather than patch, and pre-1.0 that is the tier for a
+breaking change: anything naming the old path by hand stops resolving.
 
 `0.3.1` — wording in [[what-each-tool-does]]: a tighter description, a shorter
 heading, and a clause about renaming conventions cut as rationale nobody needed

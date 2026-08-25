@@ -43,7 +43,7 @@ report() {
 catalog() {
   d=$T/$1
   mkdir -p "$d/bundles/widgets/workflows" "$d/bundles/widgets/policy"
-  cat > "$d/catalog.md" <<'EOF'
+  cat > "$d/CATALOG.md" <<'EOF'
 ---
 type: luma/catalog
 namespace: acme
@@ -53,7 +53,7 @@ tags:
   - library
 ---
 EOF
-  cat > "$d/bundles/widgets/bundle.md" <<'EOF'
+  cat > "$d/bundles/widgets/BUNDLE.md" <<'EOF'
 ---
 type: bundle
 version: 0.1.0
@@ -81,8 +81,8 @@ EOF
   printf '%s' "$d"
 }
 
-# front <catalog> <frontmatter> — replace catalog.md's frontmatter
-front() { printf -- '---\n%s\n---\n' "$2" > "$1/catalog.md"; }
+# front <catalog> <frontmatter> — replace CATALOG.md's frontmatter
+front() { printf -- '---\n%s\n---\n' "$2" > "$1/CATALOG.md"; }
 
 # --- a good catalog stays quiet ------------------------------------------------
 
@@ -269,13 +269,13 @@ check 'missing namespace' 1 "$d"
 has 'no namespace'
 
 d=$(catalog noversion)
-printf -- '---\ntype: bundle\ndescription: No version.\n---\n' > "$d/bundles/widgets/bundle.md"
+printf -- '---\ntype: bundle\ndescription: No version.\n---\n' > "$d/bundles/widgets/BUNDLE.md"
 check 'bundle without a version' 1 "$d"
 has 'declare no version'
 
 d=$(catalog badentry)
 printf -- '---\ntype: bundle\nversion: 0.1.0\nentry_point: workflows/nope\ndescription: x\n---\n' \
-  > "$d/bundles/widgets/bundle.md"
+  > "$d/bundles/widgets/BUNDLE.md"
 check 'entry_point points at nothing' 1 "$d"
 has 'point at nothing'
 
@@ -290,11 +290,11 @@ has 'could not run'
 has 'quote it'
 
 d=$(catalog tabbed)
-printf -- '---\ntype: luma/catalog\nnamespace: acme\nstarters:\n\tproject: x\n---\n' > "$d/catalog.md"
+printf -- '---\ntype: luma/catalog\nnamespace: acme\nstarters:\n\tproject: x\n---\n' > "$d/CATALOG.md"
 check 'tab indentation refused' 1 "$d"
 has 'tabs'
 
-# A broken catalog.md must skip the other checks rather than reporting nonsense.
+# A broken CATALOG.md must skip the other checks rather than reporting nonsense.
 lacks 'both mandated'
 
 # --- one check at a time ---------------------------------------------------------
@@ -384,15 +384,15 @@ has 'still 0.1.0'
 # Same edit, version moved. This is the half that has to stay quiet — a false
 # positive in something wired pre-merge gets the check switched off.
 printf -- '---\ntype: bundle\nversion: 0.1.1\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
-  > "$r/catalog/bundles/widgets/bundle.md"
+  > "$r/catalog/bundles/widgets/BUNDLE.md"
 check 'changed with a version change' 0 "$r" --against HEAD
 lacks 'without a version change'
 
-# Editing bundle.md itself without moving the number is still a change.
+# Editing BUNDLE.md itself without moving the number is still a change.
 r=$(gitcatalog manifestonly)
 printf -- '---\ntype: bundle\nversion: 0.1.0\nentry_point: workflows/make-a-widget\ndescription: Widgets, described differently.\n---\n' \
-  > "$r/catalog/bundles/widgets/bundle.md"
-check 'bundle.md edited, version standing still' 1 "$r" --against HEAD
+  > "$r/catalog/bundles/widgets/BUNDLE.md"
+check 'BUNDLE.md edited, version standing still' 1 "$r" --against HEAD
 has 'without a version change'
 
 # An untracked file is a change to that bundle. A pre-merge job never sees one,
@@ -407,24 +407,24 @@ has 'without a version change'
 r=$(gitcatalog newbundle)
 mkdir -p "$r/catalog/bundles/gadgets"
 printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Gadgets.\n---\n' \
-  > "$r/catalog/bundles/gadgets/bundle.md"
+  > "$r/catalog/bundles/gadgets/BUNDLE.md"
 check 'a new bundle owes no bump' 0 "$r" --against HEAD
 lacks 'without a version change'
 
 # A change outside every bundle is not a bundle's to account for.
 r=$(gitcatalog manifestchange)
-printf '\nProse under the manifest.\n' >> "$r/catalog/catalog.md"
-check 'catalog.md is not a bundle' 0 "$r" --against HEAD
+printf '\nProse under the manifest.\n' >> "$r/catalog/CATALOG.md"
+check 'CATALOG.md is not a bundle' 0 "$r" --against HEAD
 lacks 'without a version change'
 
 # Two bundles, one stale: the finding names the one that moved.
 r=$(gitcatalog twobundles)
 mkdir -p "$r/catalog/bundles/gadgets"
 printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Gadgets.\n---\n' \
-  > "$r/catalog/bundles/gadgets/bundle.md"
+  > "$r/catalog/bundles/gadgets/BUNDLE.md"
 git -C "$r" add -A >/dev/null 2>&1
 git -C "$r" commit -qm gadgets >/dev/null 2>&1
-printf 'More.\n' >> "$r/catalog/bundles/gadgets/bundle.md"
+printf 'More.\n' >> "$r/catalog/bundles/gadgets/BUNDLE.md"
 check 'only the bundle that changed' 1 "$r" --against HEAD
 has 'gadgets'
 lacks 'widgets:'
@@ -433,11 +433,11 @@ lacks 'widgets:'
 # rather than reporting either answer.
 r=$(gitcatalog wasbroken)
 printf -- '---\ntype: bundle\nversion: 0.1.0\nsee: [[nope]]\ndescription: x\n---\n' \
-  > "$r/catalog/bundles/widgets/bundle.md"
+  > "$r/catalog/bundles/widgets/BUNDLE.md"
 git -C "$r" add -A >/dev/null 2>&1
 git -C "$r" commit -qm broken >/dev/null 2>&1
 printf -- '---\ntype: bundle\nversion: 0.1.0\ndescription: Widgets.\n---\n' \
-  > "$r/catalog/bundles/widgets/bundle.md"
+  > "$r/catalog/bundles/widgets/BUNDLE.md"
 check 'unparseable at the ref' 1 "$r" --against HEAD
 has 'could not be compared'
 
@@ -455,7 +455,7 @@ has 'no such commit'
 
 bump() {
   printf -- '---\ntype: bundle\nversion: %s\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
-    "$2" > "$1/catalog/bundles/widgets/bundle.md"
+    "$2" > "$1/catalog/bundles/widgets/BUNDLE.md"
 }
 
 # A patch that edits a `must` is the dangerous tier: two characters, the diff of
