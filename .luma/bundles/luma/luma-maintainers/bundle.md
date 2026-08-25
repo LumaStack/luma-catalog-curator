@@ -1,7 +1,7 @@
 ---
 type: bundle
-version: 0.5.1
-published: 2026-08-23
+version: 0.6.0
+published: 2026-08-25
 consumers: [organization]
 entry_point: policy/the-estate
 description: Working on the luma tools themselves — the repositories and the boundary each defends, publishing to the universal catalog, and changing a type without making every tool upgrade at once.
@@ -63,6 +63,13 @@ no sensible project-level reading of *how the luma estate is maintained* —
 adopting it into a project would be adopting somebody else's internals.
 
 ## Version
+
+`0.6.0` — **the manifest is `BUNDLE.md`.** Reserved markdown files are now
+ALL CAPS across the estate, because nobody types all caps by accident: a file
+becomes load-bearing only when somebody deliberately made it so, and writing
+`bundle.md` now fails in the safe direction — ignored rather than silently wired
+into machinery. Minor rather than patch, and pre-1.0 that is the tier for a
+breaking change: anything naming the old path by hand stops resolving.
 
 `0.5.1` — *standard* becomes *policy*. Wording only: `policy` is the document
 type the format defines and the word this estate uses everywhere else, and
