@@ -112,9 +112,9 @@ def run(cat: Catalog, against: str) -> Result:
         if not files:
             continue
 
-        was, why = _version_at(root, ref, home / "bundle.md")
+        was, why = _version_at(root, ref, home / "BUNDLE.md")
         if why:
-            unreadable.append(f"{bundle.name}: bundle.md at {against}: {why}")
+            unreadable.append(f"{bundle.name}: BUNDLE.md at {against}: {why}")
             continue
         if was is None:
             continue  # new bundle — its first version is whatever it says

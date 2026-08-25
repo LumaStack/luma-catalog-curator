@@ -18,7 +18,7 @@ In `.luma/bundles/luma/luma-maintainers/`:
 
 - `policy/the-estate.md` (policy) **[read first]** — The six repositories, the boundary each one defends, and the rule that decides where a new thing goes. Read before adding anything to any of them.
 - `workflows/change-a-shared-type.md` (workflow) — Alter a shared type without making every tool upgrade at once. Use before touching anything in luma/luma-types, or any type a second consumer already reads.
-- `workflows/publish-to-the-catalog.md` (workflow) — Add or change a bundle in luma-catalog and get the version honest. Use when promoting something out of a project, or changing anything already published.
+- `workflows/publish-to-the-CATALOG.md` (workflow) — Add or change a bundle in luma-catalog and get the version honest. Use when promoting something out of a project, or changing anything already published.
 
 ### `luma/luma-tools` 0.3.1
 

@@ -107,14 +107,14 @@ class Catalog:
 
 
 def find(start: Path) -> Path | None:
-    """A catalog's content directory — where `catalog.md` sits.
+    """A catalog's content directory — where `CATALOG.md` sits.
 
     Checked one level down as well, because a catalog repository conventionally
     keeps its content under `catalog/` and pointing a tool at the repository is
     what anybody would do.
     """
     for candidate in (start, start / "catalog"):
-        if (candidate / "catalog.md").is_file():
+        if (candidate / "CATALOG.md").is_file():
             return candidate
     return None
 
@@ -130,11 +130,40 @@ def _read(path: Path) -> tuple[dict | None, str | None]:
         return None, str(exc)
 
 
+# `README.md` is deliberately never an owner, whatever it contains. It carries
+# universal permission semantics — everybody believes they may edit it freely —
+# so a system depending on its structure has a fuse in it.
+NEVER_OWNS = ("README",)
+
+
+def _owns_directory(path: Path) -> bool:
+    """Is this the all-caps Document that its directory *is*?
+
+    The casing is the signal rather than any particular word, so a workflow gets
+    `WORKFLOW.md` and somebody's own type gets its own — nothing is centrally
+    reserved, which the open type vocabulary requires.
+    """
+    return path.stem.isupper() and path.stem not in NEVER_OWNS
+
+
 def _docs(root: Path) -> list[Doc]:
+    # A directory that *is* a Document owns everything beneath it: a tutorial's
+    # steps are reachable only through the tutorial and never listed
+    # separately. The bundle's own manifest owns the bundle root by the same
+    # rule and must not hide it — subordination applies within a bundle, never
+    # at its root, because a bundle's members are its content.
+    owned = {
+        path.parent
+        for path in root.rglob("*.md")
+        if path.parent != root and _owns_directory(path)
+    }
+
     out: list[Doc] = []
     for path in sorted(root.rglob("*.md")):
         rel = path.relative_to(root)
-        if rel.parts[0] in NOT_CONTENT or rel.as_posix() == "bundle.md":
+        if rel.parts[0] in NOT_CONTENT or rel.as_posix() == "BUNDLE.md":
+            continue
+        if any(parent in owned for parent in path.parents if parent != path.parent or not _owns_directory(path)):
             continue
         front, error = _read(path)
         if front is None or error or "type" not in front:
@@ -142,7 +171,11 @@ def _docs(root: Path) -> list[Doc]:
         body = path.read_text(encoding="utf-8").split("\n---", 1)[-1]
         out.append(
             Doc(
-                doc_id=rel.as_posix()[:-3],
+                # The directory is the identity. `WORKFLOW.md` is a local
+                # detail nothing references, so the ID shortens to the
+                # directory that holds it.
+                doc_id=(rel.parent.as_posix() if _owns_directory(path)
+                        else rel.as_posix()[:-3]),
                 path=path,
                 type=str(front.get("type", "")),
                 title=str(front.get("title", "")),
@@ -160,16 +193,16 @@ def load(start: Path) -> Catalog:
         return Catalog(
             root=start,
             missing=True,
-            error=f"no catalog here — nothing named catalog.md in {start} or {start}/catalog",
+            error=f"no catalog here — nothing named CATALOG.md in {start} or {start}/catalog",
         )
 
-    manifest, error = _read(root / "catalog.md")
+    manifest, error = _read(root / "CATALOG.md")
     catalog = Catalog(root=root, manifest=manifest or {})
     if error:
-        catalog.error = f"catalog.md: {error}"
+        catalog.error = f"CATALOG.md: {error}"
         return catalog
     if manifest is None:
-        catalog.error = "catalog.md has no frontmatter, so it declares nothing"
+        catalog.error = "CATALOG.md has no frontmatter, so it declares nothing"
         return catalog
 
     directory = root / "bundles"
@@ -177,7 +210,7 @@ def load(start: Path) -> Catalog:
         return catalog
 
     for entry in sorted(p for p in directory.iterdir() if p.is_dir()):
-        bundle_manifest = entry / "bundle.md"
+        bundle_manifest = entry / "BUNDLE.md"
         if not bundle_manifest.is_file():
             continue
         front, err = _read(bundle_manifest)
@@ -187,7 +220,7 @@ def load(start: Path) -> Catalog:
                 root=entry,
                 manifest=front or {},
                 docs=tuple(_docs(entry)),
-                error=f"bundle.md: {err}" if err else None,
+                error=f"BUNDLE.md: {err}" if err else None,
             )
         )
     return catalog
