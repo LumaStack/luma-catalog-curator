@@ -549,7 +549,6 @@ cat > "$d/bundles/widgets/policy/hard.md" <<'EOF'
 type: policy
 title: No force pushing
 description: Never force-push a shared branch.
-compliance: required
 on_violation: block
 applies_to:
   - command: git push --force
@@ -577,7 +576,6 @@ cat > "$d/bundles/gadgets/policy/commits.md" <<'EOF'
 type: policy
 title: Commit style
 description: How commits are written.
-compliance: required
 applies_to:
   - command: git commit
 ---
@@ -588,7 +586,6 @@ cat > "$d/bundles/widgets/policy/commits2.md" <<'EOF'
 type: policy
 title: Commit contents
 description: What may be committed.
-compliance: required
 applies_to:
   - command: git commit
 ---
@@ -598,40 +595,10 @@ check 'one trigger bound by two bundles is surfaced' 0 "$d"
 has 'more than one bundle'
 has 'command:git commit'
 
-# Two suggestions colliding costs nothing; only obligations are worth the noise.
-d=$(catalog routesoft)
-mkdir -p "$d/bundles/gadgets/policy"
-cat > "$d/bundles/gadgets/BUNDLE.md" <<'EOF'
----
-type: bundle
-version: 0.1.0
-description: Gadgets.
----
-EOF
-cat > "$d/bundles/gadgets/policy/a.md" <<'EOF'
----
-type: policy
-title: A
-description: A.
-compliance: recommended
-applies_to:
-  - command: git commit
----
-x
-EOF
-cat > "$d/bundles/widgets/policy/b.md" <<'EOF'
----
-type: policy
-title: B
-description: B.
-compliance: recommended
-applies_to:
-  - command: git commit
----
-x
-EOF
-check 'two recommendations on one trigger are not noise' 0 "$d"
-lacks 'more than one bundle'
+# There is no soft tier to test: a policy binds because it is a policy, so two of
+# them on one trigger is always the case worth surfacing. The case that used to
+# live here — two `recommended` policies being beneath notice — went with the
+# field.
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ] || exit 1
