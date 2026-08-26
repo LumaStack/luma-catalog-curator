@@ -2,7 +2,6 @@
 type: workflow
 title: Publish a bundle to the universal catalog
 description: Add or change a bundle in luma-catalog and get the version honest. Use when promoting something out of a project, or changing anything already published.
-compliance: optional
 ---
 
 # Publish a bundle to the universal catalog

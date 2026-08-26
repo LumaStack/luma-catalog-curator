@@ -2,7 +2,6 @@
 type: policy
 title: The estate, and what each repository owns
 description: The six repositories, the boundary each one defends, and the rule that decides where a new thing goes. Read before adding anything to any of them.
-compliance: mandatory
 applies_to:
   - topic: deciding which repository a new thing belongs in
 ---
