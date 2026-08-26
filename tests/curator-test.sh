@@ -549,7 +549,7 @@ cat > "$d/bundles/widgets/policy/hard.md" <<'EOF'
 type: policy
 title: No force pushing
 description: Never force-push a shared branch.
-compliance: mandatory
+compliance: required
 on_violation: block
 applies_to:
   - command: git push --force
@@ -577,7 +577,7 @@ cat > "$d/bundles/gadgets/policy/commits.md" <<'EOF'
 type: policy
 title: Commit style
 description: How commits are written.
-compliance: mandatory
+compliance: required
 applies_to:
   - command: git commit
 ---
@@ -588,7 +588,7 @@ cat > "$d/bundles/widgets/policy/commits2.md" <<'EOF'
 type: policy
 title: Commit contents
 description: What may be committed.
-compliance: mandatory
+compliance: required
 applies_to:
   - command: git commit
 ---
