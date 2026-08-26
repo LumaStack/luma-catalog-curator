@@ -74,7 +74,7 @@ EOF
 type: policy
 title: Rules
 description: What a widget may be.
-preload: mandatory
+matches: always
 ---
 Some rules here, which are several words long.
 EOF
@@ -322,7 +322,7 @@ has '"severity"'
 good2=$(catalog doctor)
 report 'report on a good catalog' 0 "$good2"
 has 'widgets'
-has 'preload'
+has 'always'
 
 # It reports on a catalog that check refuses, because it is not a gate.
 d=$(catalog doctorbad)
@@ -339,7 +339,7 @@ x: [[y]]'
 report 'report on unreadable catalog' 2 "$d"
 
 report 'report json' 0 "$good2" --json
-has '"preload_words"'
+has '"always_words"'
 has '"bundles": 1'
 
 # --- --against: what changed without saying so -------------------------------------

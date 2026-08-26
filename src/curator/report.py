@@ -79,25 +79,27 @@ def doctor(cat: Catalog, as_json: bool) -> int:
     for bundle in sorted(cat.bundles, key=lambda b: b.name):
         if bundle.error:
             continue
-        mandatory = [d for d in bundle.docs if d.preload == "mandatory"]
         rows.append(
             {
                 "bundle": bundle.name,
                 "version": bundle.version,
                 "documents": len(bundle.docs),
-                "preload_mandatory": len(mandatory),
-                "preload_words": bundle.preload_words(),
+                "always_on": len(bundle.always_on()),
+                "always_words": bundle.always_words(),
+                "legacy_field": len(bundle.legacy_docs()),
                 "words": sum(d.words for d in bundle.docs),
             }
         )
 
-    total_preload = sum(r["preload_words"] for r in rows)
+    total_always = sum(r["always_words"] for r in rows)
+    total_legacy = sum(r["legacy_field"] for r in rows)
     summary = {
         "catalog": str(cat.root),
         "namespace": cat.namespace or None,
         "bundles": len(rows),
         "documents": sum(r["documents"] for r in rows),
-        "preload_words_if_all_adopted": total_preload,
+        "always_words_if_all_adopted": total_always,
+        "documents_still_using_applies_to": total_legacy,
         "entries": rows,
     }
 
@@ -108,31 +110,47 @@ def doctor(cat: Catalog, as_json: bool) -> int:
     name = cat.namespace or "(no namespace declared)"
     print(f"{name} — {len(rows)} bundle(s), {summary['documents']} document(s)")
     print()
-    print(f"{'bundle':<26}{'version':>9}{'docs':>6}{'preload':>9}{'words':>8}")
-    print("-" * 58)
+    print(f"{'bundle':<26}{'version':>9}{'docs':>6}{'always':>8}{'words':>8}")
+    print("-" * 57)
     for row in rows:
         print(
             f"{row['bundle']:<26}{row['version']:>9}{row['documents']:>6}"
-            f"{row['preload_mandatory']:>9}{row['preload_words']:>8}"
+            f"{row['always_on']:>8}{row['always_words']:>8}"
         )
-    print("-" * 58)
-    print(f"{'every bundle adopted':<26}{'':>9}{'':>6}{'':>9}{total_preload:>8}")
+    print("-" * 57)
+    print(f"{'every bundle adopted':<26}{'':>9}{'':>6}{'':>8}{total_always:>8}")
     print()
     print(
         "The last column is what a bundle costs an adopter in **every session**,\n"
-        "unconditionally — the sum of its `preload: mandatory` documents. It is a\n"
+        "unconditionally — the sum of its `matches: always` documents. It is a\n"
         "context tax the catalog can compute and the adopter cannot see before\n"
         "adopting."
     )
+    print(
+        "\nZero is the expected reading. A Document that says nothing about what\n"
+        "surfaces it is available on request, so this counts only what asked for\n"
+        "a permanent seat."
+    )
 
-    heavy = [r for r in rows if r["preload_words"] > 1200]
+    heavy = [r for r in rows if r["always_words"] > 1200]
     if heavy:
         print()
         print("Heaviest, and worth a second look:")
-        for row in sorted(heavy, key=lambda r: -r["preload_words"]):
-            print(f"  {row['bundle']} — {row['preload_words']} words always loaded")
+        for row in sorted(heavy, key=lambda r: -r["always_words"]):
+            print(f"  {row['bundle']} — {row['always_words']} words always loaded")
         print(
             "\n  A large unconditional footprint is a defect that is visible as a\n"
-            "  number. Consider whether every mandatory document earns it."
+            "  number. Consider whether every always-on document earns it."
+        )
+
+    if total_legacy:
+        print()
+        print(f"{total_legacy} document(s) still say `applies_to` rather than `matches`:")
+        for row in sorted((r for r in rows if r["legacy_field"]), key=lambda r: r["bundle"]):
+            print(f"  {row['bundle']} — {row['legacy_field']}")
+        print(
+            "\n  The old name is read where the new one is absent, so nothing is\n"
+            "  broken and nothing is finished. This count is the migration's\n"
+            "  ledger — it goes quiet when the work is done."
         )
     return 0
