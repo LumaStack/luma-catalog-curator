@@ -28,9 +28,9 @@ class Doc:
     type: str
     title: str
     description: str
-    preload: str
     on_violation: str
-    applies_to: tuple[str, ...]
+    matches: tuple[str, ...]
+    legacy_field: str
     words: int
 
 
@@ -56,9 +56,21 @@ class Bundle:
     def entry_point(self) -> str:
         return str(self.manifest.get("entry_point", ""))
 
-    def preload_words(self) -> int:
-        """What adopting this costs an adopter in every session, unconditionally."""
-        return sum(d.words for d in self.docs if d.preload == "mandatory")
+    def always_words(self) -> int:
+        """What adopting this costs an adopter in every session, unconditionally.
+
+        **Only what asked for it.** `matches: always` is the single route to a
+        permanent seat in a reader's context, so this counts a deliberate claim
+        rather than an accident — which is what makes the number worth printing
+        beside a bundle somebody is deciding whether to adopt.
+        """
+        return sum(d.words for d in self.docs if d.matches == ("always",))
+
+    def always_on(self) -> list[Doc]:
+        return [d for d in self.docs if d.matches == ("always",)]
+
+    def legacy_docs(self) -> list[Doc]:
+        return [d for d in self.docs if d.legacy_field == "applies_to"]
 
 
 @dataclass
@@ -148,12 +160,27 @@ def _owns_directory(path: Path) -> bool:
     return path.stem.isupper() and path.stem not in NEVER_OWNS
 
 
-def _triggers(raw: object) -> tuple[str, ...]:
-    """`applies_to` as `kind:value` strings, in declared order.
+# `matches`, and the name it carried through the format's v0.0.13. The old one
+# is read where the new one is absent, so a catalog part-way through the rename
+# still reports honestly instead of appearing to declare nothing.
+FIELDS = ("matches", "applies_to")
 
-    Triggers combine with OR — any one matching is enough — so this is a flat
-    list rather than anything with structure to interpret.
+
+def _triggers(raw: object) -> tuple[str, ...]:
+    """`matches` as `kind:value` strings, in declared order.
+
+    **A bare word is a keyword, not a trigger**, and the missing colon is what
+    tells them apart without a second return value. `always` yields
+    `("always",)`; `nothing`, an unrecognised keyword and an absent field all
+    yield `()` — failing toward *available on request*, because
+    under-delivering is recoverable and over-delivering is a token bomb.
+
+    Triggers combine with OR — any one matching is enough — so the list form is
+    flat, with no structure to interpret.
     """
+    if isinstance(raw, str):
+        word = raw.strip()
+        return ("always",) if word == "always" else ()
     if not isinstance(raw, list):
         return ()
     out = []
@@ -161,6 +188,11 @@ def _triggers(raw: object) -> tuple[str, ...]:
         if isinstance(item, dict):
             out.extend(f"{k}:{v}" for k, v in item.items())
     return tuple(out)
+
+
+def _field(front: dict) -> str:
+    """Which spelling this Document used — `matches`, `applies_to`, or none."""
+    return next((f for f in FIELDS if f in front), "")
 
 
 def _docs(root: Path) -> list[Doc]:
@@ -197,9 +229,10 @@ def _docs(root: Path) -> list[Doc]:
                 type=str(front.get("type", "")),
                 title=str(front.get("title", "")),
                 description=str(front.get("description", "")),
-                preload=str(front.get("preload", "") or "optional"),
+
                 on_violation=str(front.get("on_violation", "") or "allow"),
-                applies_to=_triggers(front.get("applies_to")),
+                matches=_triggers(front.get(_field(front))),
+                legacy_field=_field(front),
                 words=len(body.split()),
             )
         )

@@ -38,7 +38,7 @@ def run(cat: Catalog) -> Result:
     # Publishing that is a decision, and a catalog that makes it silently is a
     # catalog nobody audited.
     blocking = [
-        f"{b.name} {d.doc_id} — {', '.join(d.applies_to) or 'no trigger'}"
+        f"{b.name} {d.doc_id} — {', '.join(d.matches) or 'matches nothing'}"
         for b in cat.bundles
         for d in b.docs
         if d.on_violation == "block"
@@ -71,7 +71,7 @@ def run(cat: Catalog) -> Result:
         for doc in bundle.docs:
             if doc.type != "policy":
                 continue
-            for trigger in doc.applies_to:
+            for trigger in doc.matches:
                 where[trigger].add(f"{bundle.name} {doc.doc_id}")
 
     shared = {t: v for t, v in where.items() if len({s.split()[0] for s in v}) > 1}
