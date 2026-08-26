@@ -63,12 +63,13 @@ def run(cat: Catalog) -> Result:
     # read two paragraphs and conclude they disagree**, so this reports the
     # overlap and leaves the judgement to a person.
     #
-    # It is scoped to `required`, because two suggestions colliding costs
-    # nothing and two obligations colliding is the case worth looking at.
+    # Scoped to policies, because a policy is the thing that binds — two of
+    # them speaking at once is the case worth looking at, where two procedures
+    # both being relevant at a moment is ordinary.
     where: dict[str, set[str]] = defaultdict(set)
     for bundle in cat.bundles:
         for doc in bundle.docs:
-            if doc.compliance != "required":
+            if doc.type != "policy":
                 continue
             for trigger in doc.applies_to:
                 where[trigger].add(f"{bundle.name} {doc.doc_id}")
@@ -78,9 +79,9 @@ def run(cat: Catalog) -> Result:
         result.notices.append(
             Notice(
                 CHECK,
-                f"{len(shared)} trigger(s) bind binding rules in more than one bundle",
+                f"{len(shared)} trigger(s) bind policies in more than one bundle",
                 tuple(sorted(f"{t} <- {', '.join(sorted(v))}" for t, v in shared.items())),
-                "A project adopting both gets two obligations firing at once. That is "
+                "A project adopting both gets two rules in force at once. That is "
                 "usually fine and occasionally two rules that contradict each other — "
                 "which nothing can detect automatically, because the disagreement is "
                 "in the prose rather than in the triggers.",
