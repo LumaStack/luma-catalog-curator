@@ -550,7 +550,7 @@ type: policy
 title: No force pushing
 description: Never force-push a shared branch.
 on_violation: block
-applies_to:
+matches:
   - command: git push --force
 ---
 x
@@ -576,7 +576,7 @@ cat > "$d/bundles/gadgets/policy/commits.md" <<'EOF'
 type: policy
 title: Commit style
 description: How commits are written.
-applies_to:
+matches:
   - command: git commit
 ---
 x
@@ -586,7 +586,7 @@ cat > "$d/bundles/widgets/policy/commits2.md" <<'EOF'
 type: policy
 title: Commit contents
 description: What may be committed.
-applies_to:
+matches:
   - command: git commit
 ---
 x

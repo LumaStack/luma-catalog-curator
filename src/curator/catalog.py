@@ -30,7 +30,6 @@ class Doc:
     description: str
     on_violation: str
     matches: tuple[str, ...]
-    legacy_field: str
     words: int
 
 
@@ -68,9 +67,6 @@ class Bundle:
 
     def always_on(self) -> list[Doc]:
         return [d for d in self.docs if d.matches == ("always",)]
-
-    def legacy_docs(self) -> list[Doc]:
-        return [d for d in self.docs if d.legacy_field == "applies_to"]
 
 
 @dataclass
@@ -160,12 +156,6 @@ def _owns_directory(path: Path) -> bool:
     return path.stem.isupper() and path.stem not in NEVER_OWNS
 
 
-# `matches`, and the name it carried through the format's v0.0.13. The old one
-# is read where the new one is absent, so a catalog part-way through the rename
-# still reports honestly instead of appearing to declare nothing.
-FIELDS = ("matches", "applies_to")
-
-
 def _triggers(raw: object) -> tuple[str, ...]:
     """`matches` as `kind:value` strings, in declared order.
 
@@ -189,10 +179,6 @@ def _triggers(raw: object) -> tuple[str, ...]:
             out.extend(f"{k}:{v}" for k, v in item.items())
     return tuple(out)
 
-
-def _field(front: dict) -> str:
-    """Which spelling this Document used — `matches`, `applies_to`, or none."""
-    return next((f for f in FIELDS if f in front), "")
 
 
 def _docs(root: Path) -> list[Doc]:
@@ -231,8 +217,7 @@ def _docs(root: Path) -> list[Doc]:
                 description=str(front.get("description", "")),
 
                 on_violation=str(front.get("on_violation", "") or "allow"),
-                matches=_triggers(front.get(_field(front))),
-                legacy_field=_field(front),
+                matches=_triggers(front.get("matches")),
                 words=len(body.split()),
             )
         )

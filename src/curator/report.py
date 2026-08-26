@@ -86,20 +86,17 @@ def doctor(cat: Catalog, as_json: bool) -> int:
                 "documents": len(bundle.docs),
                 "always_on": len(bundle.always_on()),
                 "always_words": bundle.always_words(),
-                "legacy_field": len(bundle.legacy_docs()),
                 "words": sum(d.words for d in bundle.docs),
             }
         )
 
     total_always = sum(r["always_words"] for r in rows)
-    total_legacy = sum(r["legacy_field"] for r in rows)
     summary = {
         "catalog": str(cat.root),
         "namespace": cat.namespace or None,
         "bundles": len(rows),
         "documents": sum(r["documents"] for r in rows),
         "always_words_if_all_adopted": total_always,
-        "documents_still_using_applies_to": total_legacy,
         "entries": rows,
     }
 
@@ -143,14 +140,4 @@ def doctor(cat: Catalog, as_json: bool) -> int:
             "  number. Consider whether every always-on document earns it."
         )
 
-    if total_legacy:
-        print()
-        print(f"{total_legacy} document(s) still say `applies_to` rather than `matches`:")
-        for row in sorted((r for r in rows if r["legacy_field"]), key=lambda r: r["bundle"]):
-            print(f"  {row['bundle']} — {row['legacy_field']}")
-        print(
-            "\n  The old name is read where the new one is absent, so nothing is\n"
-            "  broken and nothing is finished. This count is the migration's\n"
-            "  ledger — it goes quiet when the work is done."
-        )
     return 0
