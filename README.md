@@ -113,3 +113,4 @@ Run the tests with `sh tests/run`. They are hermetic — every case builds a thr
 **Nothing has dependencies.** Roughly half the designed checks — joint satisfiability, requiring a reason for a narrow constraint, cross-bundle links at resolved versions — have nothing to check. They are absent rather than stubbed.
 
 The full design, including what was considered and rejected, is `luma-leader/docs/curator.md`.
+
