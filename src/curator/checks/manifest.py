@@ -10,6 +10,7 @@ standards rather than checking them. Everything here follows from the shapes the
 from __future__ import annotations
 
 from ..catalog import Catalog
+from .. import git
 from ..finding import Finding, Result, Skipped
 
 CHECK = "manifest"
@@ -60,15 +61,19 @@ def run(cat: Catalog) -> Result:
             "nothing will read it as a catalog.",
         )
 
-    if not cat.namespace:
+    # A declared namespace is optional now: `luma-foreman` derives one from
+    # where the catalog lives, which is what stops a fork inheriting somebody
+    # else's name. Silence is only a defect where nothing can be derived —
+    # a catalog with no remote, which no adopter can address at all.
+    if not cat.namespace and not git.origin(cat.root):
         bad(
             "medium",
-            "this catalog declares no namespace",
+            "this catalog has no namespace and none can be derived",
             ["CATALOG.md"],
-            "Every bundle is addressed <namespace>/<name>, and the namespace "
-            "belongs to the catalog. Without one, an adopter has to be told out "
-            "of band what to call what they took — and a name learned out of "
-            "band is a name that gets typed wrongly.",
+            "Every bundle is addressed <namespace>/<name>. A namespace derives "
+            "from the catalog's remote; this one has none, so there is nothing "
+            "to derive from and nothing declared. Add `namespace:` to "
+            "CATALOG.md, or publish this where it has an address.",
         )
 
     if not cat.bundles:

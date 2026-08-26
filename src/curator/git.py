@@ -51,6 +51,19 @@ def repo_root(start: Path) -> Path:
     return Path(out)
 
 
+def origin(root: Path) -> str:
+    """The remote a catalog is published from, or empty if it has none.
+
+    Empty rather than raising: having no remote is an ordinary state for a
+    catalog somebody is still writing, and a checker that dies on it would be
+    unusable exactly where it is most wanted.
+    """
+    try:
+        return _run(root, "remote", "get-url", "origin").strip()
+    except GitError:
+        return ""
+
+
 def resolve(root: Path, ref: str) -> str:
     """*ref* as a commit SHA, or raise saying it is not a commit here."""
     try:
