@@ -2,7 +2,6 @@
 type: policy
 title: What each luma tool does
 description: The tools, the one job each performs, and when to use them. Read before installing or invoking any of them.
-compliance: mandatory
 applies_to:
   - command: luma-foreman
   - command: luma-catalog-curator
