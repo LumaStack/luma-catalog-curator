@@ -199,7 +199,13 @@ def _docs(root: Path) -> list[Doc]:
                 title=str(front.get("title", "")),
                 description=str(front.get("description", "")),
                 preload=str(front.get("preload", "") or "optional"),
-                compliance=str(front.get("compliance", "") or "optional"),
+                # A policy *is* an obligation, so it binds unless it says
+                # otherwise. Nothing else carries compliance: a workflow's steps
+                # bind by being steps, a concept obliges nothing.
+                compliance=str(
+                    front.get("compliance", "")
+                    or ("required" if str(front.get("type", "")) == "policy" else "")
+                ),
                 on_violation=str(front.get("on_violation", "") or "allow"),
                 applies_to=_triggers(front.get("applies_to")),
                 words=len(body.split()),

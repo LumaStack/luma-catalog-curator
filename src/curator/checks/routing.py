@@ -63,12 +63,12 @@ def run(cat: Catalog) -> Result:
     # read two paragraphs and conclude they disagree**, so this reports the
     # overlap and leaves the judgement to a person.
     #
-    # It is scoped to `mandatory`, because two suggestions colliding costs
+    # It is scoped to `required`, because two suggestions colliding costs
     # nothing and two obligations colliding is the case worth looking at.
     where: dict[str, set[str]] = defaultdict(set)
     for bundle in cat.bundles:
         for doc in bundle.docs:
-            if doc.compliance != "mandatory":
+            if doc.compliance != "required":
                 continue
             for trigger in doc.applies_to:
                 where[trigger].add(f"{bundle.name} {doc.doc_id}")
@@ -78,7 +78,7 @@ def run(cat: Catalog) -> Result:
         result.notices.append(
             Notice(
                 CHECK,
-                f"{len(shared)} trigger(s) bind mandatory rules in more than one bundle",
+                f"{len(shared)} trigger(s) bind binding rules in more than one bundle",
                 tuple(sorted(f"{t} <- {', '.join(sorted(v))}" for t, v in shared.items())),
                 "A project adopting both gets two obligations firing at once. That is "
                 "usually fine and occasionally two rules that contradict each other — "
