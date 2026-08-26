@@ -22,11 +22,12 @@ from __future__ import annotations
 
 from ..catalog import Catalog
 from ..finding import Result
-from . import consistency, manifest, versioning
+from . import consistency, manifest, routing, versioning
 
 CHECKS = {
     manifest.CHECK: manifest.run,
     consistency.CHECK: consistency.run,
+    routing.CHECK: routing.run,
 }
 
 # Checks that compare the catalog against a git ref. Only run with `--against`.

@@ -29,6 +29,9 @@ class Doc:
     title: str
     description: str
     preload: str
+    compliance: str
+    on_violation: str
+    applies_to: tuple[str, ...]
     words: int
 
 
@@ -146,6 +149,21 @@ def _owns_directory(path: Path) -> bool:
     return path.stem.isupper() and path.stem not in NEVER_OWNS
 
 
+def _triggers(raw: object) -> tuple[str, ...]:
+    """`applies_to` as `kind:value` strings, in declared order.
+
+    Triggers combine with OR — any one matching is enough — so this is a flat
+    list rather than anything with structure to interpret.
+    """
+    if not isinstance(raw, list):
+        return ()
+    out = []
+    for item in raw:
+        if isinstance(item, dict):
+            out.extend(f"{k}:{v}" for k, v in item.items())
+    return tuple(out)
+
+
 def _docs(root: Path) -> list[Doc]:
     # A directory that *is* a Document owns everything beneath it: a tutorial's
     # steps are reachable only through the tutorial and never listed
@@ -181,6 +199,9 @@ def _docs(root: Path) -> list[Doc]:
                 title=str(front.get("title", "")),
                 description=str(front.get("description", "")),
                 preload=str(front.get("preload", "") or "optional"),
+                compliance=str(front.get("compliance", "") or "optional"),
+                on_violation=str(front.get("on_violation", "") or "allow"),
+                applies_to=_triggers(front.get("applies_to")),
                 words=len(body.split()),
             )
         )
