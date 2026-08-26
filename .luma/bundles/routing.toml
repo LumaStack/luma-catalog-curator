@@ -11,7 +11,7 @@ document = "policy/the-estate"
 title = "The estate, and what each repository owns"
 path = ".luma/bundles/luma/luma-maintainers/policy/the-estate.md"
 on_violation = "allow"
-applies_to = ["topic:deciding which repository a new thing belongs in"]
+matches = ["topic:deciding which repository a new thing belongs in"]
 
 [[rule]]
 bundle = "luma/luma-tools"
@@ -19,4 +19,4 @@ document = "policy/what-each-tool-does"
 title = "What each luma tool does"
 path = ".luma/bundles/luma/luma-tools/policy/what-each-tool-does.md"
 on_violation = "allow"
-applies_to = ["command:luma-foreman", "command:luma-catalog-curator", "topic:choosing which luma tool does a job"]
+matches = ["command:luma-foreman", "command:luma-catalog-curator", "topic:choosing which luma tool does a job"]

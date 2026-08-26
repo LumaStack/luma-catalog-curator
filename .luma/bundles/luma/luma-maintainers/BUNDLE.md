@@ -1,6 +1,6 @@
 ---
 type: bundle
-version: 0.8.0
+version: 0.9.0
 published: 2026-08-25
 consumers: [organization]
 entry_point: policy/the-estate
@@ -63,6 +63,22 @@ no sensible project-level reading of *how the luma estate is maintained* —
 adopting it into a project would be adopting somebody else's internals.
 
 ## Version
+
+`0.9.0` — **`applies_to` is now `matches`.** The old name obliged an author to
+write a false sentence: `applies_to: everything` claims a rule governs
+everything, and none does — what a rule governs is stated in its body, where no
+frontmatter value reaches. The field says what makes a Document *surface*, which
+is smaller and true, and it reads as a sentence in every form it takes: matches
+`git commit`, matches always, matches nothing.
+
+**The default reverses with it.** A Document that says nothing is now available
+on request rather than loaded into every session. Nothing here is affected —
+every rule in this bundle already states what surfaces it — but a rule that
+genuinely should always be present now says `matches: always` rather than
+staying silent and being treated as though it had.
+
+Minor. Nothing a reader is obliged to do has changed; the field it is declared
+in has been renamed, and `applies_to` is still read while the rename finishes.
 
 `0.8.0` — **vocabulary.** `moment` becomes `event` — a moment is a point in
 time and `applies_to` takes nouns. `compliance` is dropped wherever it was
