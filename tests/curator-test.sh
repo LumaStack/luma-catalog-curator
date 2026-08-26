@@ -365,12 +365,12 @@ gitcatalog() {
 # Nothing changed, so nothing owes a version.
 r=$(gitcatalog quiet)
 check 'unchanged tree is quiet' 0 "$r" --against HEAD
-has 'from 3 check(s)'
+has 'from 4 check(s)'
 lacks 'without a version change'
 
 # Without --against, git is never consulted and the check does not exist.
 check 'no ref, no versioning check' 0 "$r"
-has 'from 2 check(s)'
+has 'from 3 check(s)'
 lacks 'versioning'
 
 # The case this exists for: a bundle's files moved and its version did not.
@@ -529,6 +529,109 @@ has 'from 1 check(s)'
 
 check 'versioning json' 1 "$r" --only versioning --against HEAD --json
 has '"check": "versioning"'
+
+# --- routing: what this catalog does to the projects that adopt it --------------
+#
+# Cross-bundle only. Whether one bundle's triggers are well formed is a question
+# about that bundle and foreman already answers it; what no single bundle can
+# see is what happens when several are adopted together.
+
+d=$(catalog routeclean)
+check 'a catalog with no triggers is quiet' 0 "$d"
+lacks 'routing'
+
+# Blocking is the strongest claim a published bundle can make: it stops somebody
+# else's command in a repository this catalog will never see. A notice, because
+# it is a decision rather than a defect — but never a silent one.
+d=$(catalog routeblock)
+cat > "$d/bundles/widgets/policy/hard.md" <<'EOF'
+---
+type: policy
+title: No force pushing
+description: Never force-push a shared branch.
+compliance: mandatory
+on_violation: block
+applies_to:
+  - command: git push --force
+---
+x
+EOF
+check 'publishing a blocking rule is surfaced' 0 "$d"
+has 'refuse an adopter'
+has 'hard'
+
+# Two bundles binding one trigger. Usually legitimate, occasionally two
+# obligations that contradict each other — which nothing can detect, because the
+# disagreement lives in the prose and not in the triggers.
+d=$(catalog routeoverlap)
+mkdir -p "$d/bundles/gadgets/policy"
+cat > "$d/bundles/gadgets/BUNDLE.md" <<'EOF'
+---
+type: bundle
+version: 0.1.0
+description: Gadgets.
+---
+EOF
+cat > "$d/bundles/gadgets/policy/commits.md" <<'EOF'
+---
+type: policy
+title: Commit style
+description: How commits are written.
+compliance: mandatory
+applies_to:
+  - command: git commit
+---
+x
+EOF
+cat > "$d/bundles/widgets/policy/commits2.md" <<'EOF'
+---
+type: policy
+title: Commit contents
+description: What may be committed.
+compliance: mandatory
+applies_to:
+  - command: git commit
+---
+x
+EOF
+check 'one trigger bound by two bundles is surfaced' 0 "$d"
+has 'more than one bundle'
+has 'command:git commit'
+
+# Two suggestions colliding costs nothing; only obligations are worth the noise.
+d=$(catalog routesoft)
+mkdir -p "$d/bundles/gadgets/policy"
+cat > "$d/bundles/gadgets/BUNDLE.md" <<'EOF'
+---
+type: bundle
+version: 0.1.0
+description: Gadgets.
+---
+EOF
+cat > "$d/bundles/gadgets/policy/a.md" <<'EOF'
+---
+type: policy
+title: A
+description: A.
+compliance: recommended
+applies_to:
+  - command: git commit
+---
+x
+EOF
+cat > "$d/bundles/widgets/policy/b.md" <<'EOF'
+---
+type: policy
+title: B
+description: B.
+compliance: recommended
+applies_to:
+  - command: git commit
+---
+x
+EOF
+check 'two recommendations on one trigger are not noise' 0 "$d"
+lacks 'more than one bundle'
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ] || exit 1
