@@ -260,6 +260,19 @@ requires:
     version: "^2 || ~3"'
 check 'unimplemented constraint is not refused' 0 "$d"
 
+# A namespace that can be derived is not a missing one. luma-foreman takes the
+# last two path segments of the catalog's remote, so a catalog with an origin
+# and no declaration is addressable — and is the recommended shape, because a
+# fork cannot inherit a name nobody wrote down.
+
+d=$(catalog derivable)
+front "$d" 'type: luma/catalog
+description: Derives its namespace.'
+git -C "$d" init -q
+git -C "$d" remote add origin https://github.com/acme/things.git
+check 'derivable namespace is fine' 0 "$d"
+lacks 'no namespace'
+
 # --- manifest shape -------------------------------------------------------------
 
 d=$(catalog nonamespace)
