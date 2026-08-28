@@ -118,21 +118,21 @@ def run(cat: Catalog) -> Result:
             "one the bundle is invisible to everything but a directory listing.",
         )
 
-    # `entry_point` carries a Document ID — the path within the bundle without
+    # `entrypoint` carries a Document ID — the path within the bundle without
     # the suffix. One that resolves to nothing sends a reader nowhere, silently.
     dangling: list[str] = []
     for bundle in cat.bundles:
-        if bundle.error or not bundle.entry_point:
+        if bundle.error or not bundle.entrypoint:
             continue
         ids = {d.doc_id for d in bundle.docs}
-        if bundle.entry_point not in ids:
-            dangling.append(f"{bundle.name}: {bundle.entry_point}")
+        if bundle.entrypoint not in ids:
+            dangling.append(f"{bundle.name}: {bundle.entrypoint}")
     if dangling:
         bad(
             "high",
-            f"{len(dangling)} entry_point(s) point at nothing",
+            f"{len(dangling)} entrypoint(s) point at nothing",
             dangling,
-            "entry_point carries a full Document ID — the path within the "
+            "entrypoint carries a full Document ID — the path within the "
             "bundle, without the .md suffix.",
         )
 

@@ -52,8 +52,18 @@ class Bundle:
         return str(self.manifest.get("description", ""))
 
     @property
-    def entry_point(self) -> str:
-        return str(self.manifest.get("entry_point", ""))
+    def entrypoint(self) -> str:
+        """Where a reader starts, per LKF §11.1.
+
+        **Both spellings are read while the rename lands.** `entry_point`
+        became `entrypoint` so that one word names the same thing at every
+        level; until every published bundle is republished, a reader that knew
+        only the new name would report every one of them as having no entry —
+        and a check that silently stops finding things is worse than one that
+        never ran.
+        """
+        return str(self.manifest.get("entrypoint")
+                   or self.manifest.get("entry_point", ""))
 
     def always_words(self) -> int:
         """What adopting this costs an adopter in every session, unconditionally.
