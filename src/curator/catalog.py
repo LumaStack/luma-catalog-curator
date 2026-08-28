@@ -109,11 +109,6 @@ class Catalog:
         value = self.manifest.get("requires", [])
         return [r for r in value if isinstance(r, dict)] if isinstance(value, list) else []
 
-    @property
-    def starters(self) -> dict:
-        value = self.manifest.get("starters", {})
-        return value if isinstance(value, dict) else {}
-
     def names(self) -> set[str]:
         """Bundle IDs this catalog publishes, namespaced when it declares one."""
         prefix = f"{self.namespace}/" if self.namespace else ""

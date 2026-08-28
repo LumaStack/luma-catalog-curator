@@ -120,81 +120,19 @@ def run(cat: Catalog) -> Result:
                 "reports that it did not.",
             )
 
-    # --- starters naming bundles nobody publishes --------------------------
-    #
-    # A starter fires once at bootstrap with no ongoing check behind it, so a
-    # bad entry is never caught later. Every new consumer simply begins missing
-    # something and nothing says so.
-    missing: list[str] = []
-    for name, spec in cat.starters.items():
-        for bundle in _starter_bundles(spec):
-            qualified = ("/" not in bundle) or (
-                cat.namespace and bundle.startswith(f"{cat.namespace}/")
-            )
-            if qualified and not cat.publishes(bundle):
-                missing.append(f"{name}: {bundle}")
-    if missing:
-        bad(
-            "high",
-            f"{len(missing)} starter entr(ies) name a bundle this catalog does not publish",
-            missing,
-            "A starter fires once at bootstrap with nothing checking it "
-            "afterwards, so every new consumer begins short of a bundle and "
-            "nothing ever reports it.",
-        )
-
-    # --- a starter pinning what the catalog's own mandate forbids ----------
-    pins = _starter_pins(cat)
-    conflicts: list[str] = []
-    for entry in cat.requires:
-        bundle = str(entry.get("bundle", ""))
-        constraint = str(entry.get("version", "")).strip()
-        if not constraint or bundle not in pins:
-            continue
-        for where, pinned in pins[bundle]:
-            if not _satisfies(pinned, constraint):
-                conflicts.append(f"{where}: {bundle} {pinned} vs requires {constraint}")
-    if conflicts:
-        bad(
-            "high",
-            f"{len(conflicts)} starter pin(s) conflict with this catalog's own mandate",
-            conflicts,
-            "Every new consumer would be born failing a requirement this "
-            "catalog imposes on it, which no project could diagnose from its "
-            "own side.",
-        )
 
     return result
 
 
-def _starter_bundles(spec) -> list[str]:
-    """Bundle IDs named by a starter, in either the plain or the extended form."""
-    if isinstance(spec, list):
-        return [str(s) for s in spec if isinstance(s, str)]
-    if not isinstance(spec, dict):
-        return []
-    out: list[str] = []
-    for item in spec.get("adds", []) or []:
-        if isinstance(item, str):
-            out.append(item)
-        elif isinstance(item, dict) and item.get("bundle"):
-            out.append(str(item["bundle"]))
-    return out
-
-
-def _starter_pins(cat: Catalog) -> dict[str, list[tuple[str, str]]]:
-    pins: dict[str, list[tuple[str, str]]] = {}
-    for name, spec in cat.starters.items():
-        if not isinstance(spec, dict):
-            continue
-        for item in spec.get("adds", []) or []:
-            if isinstance(item, dict) and item.get("bundle") and item.get("version"):
-                pins.setdefault(str(item["bundle"]), []).append(
-                    (f"starter {name}", str(item["version"]))
-                )
-    return pins
-
-
+# **Nothing calls these two, and that is a decision somebody has to make.** They
+# compared a starter's pin against this catalog's own mandate, and starters are
+# withdrawn. Deleting them is defensible — uncalled code is the same defect the
+# withdrawal was about — and so is keeping them, because `requires` entries
+# still carry `version:` constraints and **nothing anywhere verifies that an
+# adopted bundle satisfies one.** This is the only built piece of that check.
+#
+# Left in place rather than deleted quietly, so the choice is made deliberately
+# instead of by whoever notices first.
 def _satisfies(version: str, constraint: str) -> bool:
     """Whether an exact *version* satisfies a simple *constraint*.
 

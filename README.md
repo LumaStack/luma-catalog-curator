@@ -51,8 +51,7 @@ Without `--against`, nothing here reads git at all.
 **It checks a *set*.** Every check here is meaningless about one bundle in isolation:
 
 - a bundle both **mandated and deprecated** — not a precedence puzzle, a broken catalog
-- a **starter pinning a version the catalog's own mandate forbids**, which would make every new consumer born failing
-- **requirements and starters naming bundles the catalog does not publish**
+- **requirements naming bundles the catalog does not publish**
 - **requirement tags outside the published vocabulary**, which never fire and report green while doing it
 - **no namespace declared**, so nothing can address what the catalog publishes
 - bundles with no version, no description, or an `entrypoint` pointing at nothing
