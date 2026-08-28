@@ -116,7 +116,7 @@ requires:
 check 'mandated and deprecated' 1 "$d"
 has 'both mandated and deprecated'
 
-# --- requirements and starters that name nothing --------------------------------
+# --- requirements that name nothing ---------------------------------------------
 
 d=$(catalog dangling)
 front "$d" 'type: luma/catalog
@@ -136,24 +136,6 @@ requires:
     obligation: recommended'
 check 'foreign namespace not flagged' 0 "$d"
 lacks 'does not publish'
-
-d=$(catalog badstarter)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    - acme/widgets
-    - acme/missing'
-check 'starter names nothing' 1 "$d"
-has 'starter'
-
-d=$(catalog goodstarter)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    - acme/widgets'
-check 'good starter is quiet' 0 "$d"
 
 # --- tags outside the published vocabulary --------------------------------------
 
@@ -179,99 +161,6 @@ requires:
     obligation: mandatory
     tags: [service]'
 check 'tag in vocabulary is quiet' 0 "$d"
-
-# --- a starter pinning what the catalog itself forbids --------------------------
-
-d=$(catalog pin)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    adds:
-      - bundle: acme/widgets
-        version: "0.1.0"
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    version: ">= 2.0.0"'
-check 'starter pin conflicts with mandate' 1 "$d"
-has 'conflict'
-
-# A pin that satisfies the mandate is fine.
-d=$(catalog goodpin)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    adds:
-      - bundle: acme/widgets
-        version: "2.1.0"
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    version: ">= 2.0.0"'
-check 'satisfying pin is quiet' 0 "$d"
-lacks 'conflict'
-
-# A bare exact version is a constraint too, and the common shape for a mandate
-# that must not move.
-d=$(catalog exactpin)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    adds:
-      - bundle: acme/widgets
-        version: "0.1.0"
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    version: "2.0.0"'
-check 'exact constraint, wrong pin' 1 "$d"
-has 'conflict'
-
-d=$(catalog exactmatch)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    adds:
-      - bundle: acme/widgets
-        version: "2.0.0"
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    version: "2.0.0"'
-check 'exact constraint, matching pin' 0 "$d"
-lacks 'conflict'
-
-# An expression the comparator does not implement must not be refused.
-d=$(catalog caret)
-front "$d" 'type: luma/catalog
-namespace: acme
-starters:
-  project:
-    adds:
-      - bundle: acme/widgets
-        version: "0.1.0"
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    version: "^2 || ~3"'
-check 'unimplemented constraint is not refused' 0 "$d"
-
-# A namespace that can be derived is not a missing one. luma-foreman takes the
-# last two path segments of the catalog's remote, so a catalog with an origin
-# and no declaration is addressable — and is the recommended shape, because a
-# fork cannot inherit a name nobody wrote down.
-
-d=$(catalog derivable)
-front "$d" 'type: luma/catalog
-description: Derives its namespace.'
-git -C "$d" init -q
-git -C "$d" remote add origin https://github.com/acme/things.git
-check 'derivable namespace is fine' 0 "$d"
-lacks 'no namespace'
 
 # --- manifest shape -------------------------------------------------------------
 
@@ -312,7 +201,7 @@ has 'could not run'
 has 'quote it'
 
 d=$(catalog tabbed)
-printf -- '---\ntype: luma/catalog\nnamespace: acme\nstarters:\n\tproject: x\n---\n' > "$d/CATALOG.md"
+printf -- '---\ntype: luma/catalog\nnamespace: acme\nrequires:\n\tbundle: x\n---\n' > "$d/CATALOG.md"
 check 'tab indentation refused' 1 "$d"
 has 'tabs'
 

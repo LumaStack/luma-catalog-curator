@@ -57,7 +57,7 @@ def run(cat: Catalog) -> Result:
             f"CATALOG.md declares type {declared}",
             [f"CATALOG.md: type: {declared}"],
             "The document at a catalog's root is the thing authoritative about "
-            "starters, requires and the namespace. A different type means "
+            "requires and the namespace. A different type means "
             "nothing will read it as a catalog.",
         )
 
