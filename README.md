@@ -55,7 +55,7 @@ Without `--against`, nothing here reads git at all.
 - **requirements and starters naming bundles the catalog does not publish**
 - **requirement tags outside the published vocabulary**, which never fire and report green while doing it
 - **no namespace declared**, so nothing can address what the catalog publishes
-- bundles with no version, no description, or an `entry_point` pointing at nothing
+- bundles with no version, no description, or an `entrypoint` pointing at nothing
 
 **It does not check whether a bundle is internally sound.** A dangling wikilink, an unquoted frontmatter wikilink, a template carrying live frontmatter — those are properties of one bundle, need no catalog to find, and `luma-foreman inspect` already reports them. Run both.
 

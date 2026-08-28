@@ -57,7 +57,7 @@ EOF
 ---
 type: bundle
 version: 0.1.0
-entry_point: workflows/make-a-widget
+entrypoint: workflows/make-a-widget
 description: Widgets.
 ---
 EOF
@@ -287,9 +287,18 @@ check 'bundle without a version' 1 "$d"
 has 'declare no version'
 
 d=$(catalog badentry)
+printf -- '---\ntype: bundle\nversion: 0.1.0\nentrypoint: workflows/nope\ndescription: x\n---\n' \
+  > "$d/bundles/widgets/BUNDLE.md"
+check 'entrypoint points at nothing' 1 "$d"
+
+# The old spelling is still read, and still fires. A checker that knew only the
+# new name would report every not-yet-republished bundle as having no entry —
+# and a check that silently stops finding things is worse than one that never
+# ran.
+d=$(catalog oldentry)
 printf -- '---\ntype: bundle\nversion: 0.1.0\nentry_point: workflows/nope\ndescription: x\n---\n' \
   > "$d/bundles/widgets/BUNDLE.md"
-check 'entry_point points at nothing' 1 "$d"
+check 'the old spelling still fires' 1 "$d"
 has 'point at nothing'
 
 # --- the parser refuses rather than guessing ------------------------------------
@@ -396,14 +405,14 @@ has 'still 0.1.0'
 
 # Same edit, version moved. This is the half that has to stay quiet — a false
 # positive in something wired pre-merge gets the check switched off.
-printf -- '---\ntype: bundle\nversion: 0.1.1\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
+printf -- '---\ntype: bundle\nversion: 0.1.1\nentrypoint: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
   > "$r/catalog/bundles/widgets/BUNDLE.md"
 check 'changed with a version change' 0 "$r" --against HEAD
 lacks 'without a version change'
 
 # Editing BUNDLE.md itself without moving the number is still a change.
 r=$(gitcatalog manifestonly)
-printf -- '---\ntype: bundle\nversion: 0.1.0\nentry_point: workflows/make-a-widget\ndescription: Widgets, described differently.\n---\n' \
+printf -- '---\ntype: bundle\nversion: 0.1.0\nentrypoint: workflows/make-a-widget\ndescription: Widgets, described differently.\n---\n' \
   > "$r/catalog/bundles/widgets/BUNDLE.md"
 check 'BUNDLE.md edited, version standing still' 1 "$r" --against HEAD
 has 'without a version change'
@@ -467,7 +476,7 @@ has 'no such commit'
 # switched off, so every case below must exit 0 while still saying something.
 
 bump() {
-  printf -- '---\ntype: bundle\nversion: %s\nentry_point: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
+  printf -- '---\ntype: bundle\nversion: %s\nentrypoint: workflows/make-a-widget\ndescription: Widgets.\n---\n' \
     "$2" > "$1/catalog/bundles/widgets/BUNDLE.md"
 }
 
