@@ -22,11 +22,10 @@ from __future__ import annotations
 
 from ..catalog import Catalog
 from ..finding import Result
-from . import consistency, manifest, routing, versioning
+from . import manifest, routing, versioning
 
 CHECKS = {
     manifest.CHECK: manifest.run,
-    consistency.CHECK: consistency.run,
     routing.CHECK: routing.run,
 }
 

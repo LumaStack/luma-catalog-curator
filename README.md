@@ -50,10 +50,7 @@ Without `--against`, nothing here reads git at all.
 
 **It checks a *set*.** Every check here is meaningless about one bundle in isolation:
 
-- a bundle both **mandated and deprecated** — not a precedence puzzle, a broken catalog
-- **requirements naming bundles the catalog does not publish**
-- **requirement tags outside the published vocabulary**, which never fire and report green while doing it
-- **no namespace declared**, so nothing can address what the catalog publishes
+- **no namespace**, declared or derivable, so nothing can address what the catalog publishes
 - bundles with no version, no description, or an `entrypoint` pointing at nothing
 
 **It does not check whether a bundle is internally sound.** A dangling wikilink, an unquoted frontmatter wikilink, a template carrying live frontmatter — those are properties of one bundle, need no catalog to find, and `luma-foreman inspect` already reports them. Run both.

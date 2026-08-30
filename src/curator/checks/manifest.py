@@ -57,7 +57,7 @@ def run(cat: Catalog) -> Result:
             f"CATALOG.md declares type {declared}",
             [f"CATALOG.md: type: {declared}"],
             "The document at a catalog's root is the thing authoritative about "
-            "requires and the namespace. A different type means "
+            "the namespace it publishes under. A different type means "
             "nothing will read it as a catalog.",
         )
 
@@ -72,7 +72,7 @@ def run(cat: Catalog) -> Result:
             ["CATALOG.md"],
             "Every bundle is addressed <namespace>/<name>. A namespace derives "
             "from the catalog's remote; this one has none, so there is nothing "
-            "to derive from and nothing declared. Add `namespace:` to "
+            "to derive from and nothing declared. Add `default_namespace:` to "
             "CATALOG.md, or publish this where it has an address.",
         )
 

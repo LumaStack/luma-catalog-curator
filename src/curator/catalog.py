@@ -97,17 +97,17 @@ class Catalog:
 
     @property
     def namespace(self) -> str:
-        return str(self.manifest.get("namespace", ""))
+        """The declared prefix, if this catalog overrides the derived one.
 
-    @property
-    def tags(self) -> list[str]:
-        value = self.manifest.get("tags", [])
-        return [str(t) for t in value] if isinstance(value, list) else []
-
-    @property
-    def requires(self) -> list[dict]:
-        value = self.manifest.get("requires", [])
-        return [r for r in value if isinstance(r, dict)] if isinstance(value, list) else []
+        **`default_namespace` since `luma/catalog` 0.13.0**, because the
+        namespace derives from where the catalog lives and declaring one
+        overrides that derivation. The old key is still read while catalogs
+        are republished: a reader that knew only the new name would report
+        every not-yet-updated catalog as having none, and going quiet is
+        indistinguishable from passing.
+        """
+        return str(self.manifest.get("default_namespace")
+                   or self.manifest.get("namespace", ""))
 
     def names(self) -> set[str]:
         """Bundle IDs this catalog publishes, namespaced when it declares one."""
