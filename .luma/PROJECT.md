@@ -3,16 +3,6 @@ type: luma/project
 title: luma-catalog-curator
 disclosure_level: public
 description: The command-line tool that runs where a catalog is written — consistency checks over a set of bundles, and the report of what a catalog is becoming. Open it for anything done to a catalog, never for anything done to a project.
-owns:
-  - checks whose subject is a set of bundles rather than one bundle
-  - checks comparing a catalog against its own history, which only a publisher has
-  - the report of what a catalog costs an adopter
-  - reading a catalog manifest, including the YAML subset that requires
-must_not_own:
-  - adoption, vendoring, or anything done to a project repository
-  - checks whose subject is a single bundle in isolation
-  - any organization's conventions about how a bundle should be written
-  - what a standard says, or the reasoning behind it
 ---
 
 ## Why it exists
