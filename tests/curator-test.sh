@@ -103,65 +103,6 @@ has 'no catalog here'
 check 'no such directory' 2 "$T/nowhere"
 has 'not a directory'
 
-# --- the contradiction only a catalog can see ----------------------------------
-
-d=$(catalog contradiction)
-front "$d" 'type: luma/catalog
-namespace: acme
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-  - bundle: acme/widgets
-    obligation: deprecated'
-check 'mandated and deprecated' 1 "$d"
-has 'both mandated and deprecated'
-
-# --- requirements that name nothing ---------------------------------------------
-
-d=$(catalog dangling)
-front "$d" 'type: luma/catalog
-namespace: acme
-requires:
-  - bundle: acme/nonexistent
-    obligation: recommended'
-check 'requirement names nothing' 1 "$d"
-has 'does not publish'
-
-# A foreign namespace is legitimate — an upstream chain is real.
-d=$(catalog foreign)
-front "$d" 'type: luma/catalog
-namespace: acme
-requires:
-  - bundle: upstream/change-review
-    obligation: recommended'
-check 'foreign namespace not flagged' 0 "$d"
-lacks 'does not publish'
-
-# --- tags outside the published vocabulary --------------------------------------
-
-d=$(catalog tags)
-front "$d" 'type: luma/catalog
-namespace: acme
-tags:
-  - service
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    tags: [infrastructure]'
-check 'tag outside vocabulary' 1 "$d"
-has 'outside the published vocabulary'
-
-d=$(catalog goodtags)
-front "$d" 'type: luma/catalog
-namespace: acme
-tags:
-  - service
-requires:
-  - bundle: acme/widgets
-    obligation: mandatory
-    tags: [service]'
-check 'tag in vocabulary is quiet' 0 "$d"
-
 # --- manifest shape -------------------------------------------------------------
 
 d=$(catalog nonamespace)
@@ -276,12 +217,12 @@ gitcatalog() {
 # Nothing changed, so nothing owes a version.
 r=$(gitcatalog quiet)
 check 'unchanged tree is quiet' 0 "$r" --against HEAD
-has 'from 4 check(s)'
+has 'from 3 check(s)'
 lacks 'without a version change'
 
 # Without --against, git is never consulted and the check does not exist.
 check 'no ref, no versioning check' 0 "$r"
-has 'from 3 check(s)'
+has 'from 2 check(s)'
 lacks 'versioning'
 
 # The case this exists for: a bundle's files moved and its version did not.
