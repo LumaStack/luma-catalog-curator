@@ -1,5 +1,6 @@
 ---
 type: luma/project
+type_version: "0.2.0"
 title: luma-catalog-curator
 disclosure_level: public
 description: The command-line tool that runs where a catalog is written — cross-bundle checks over a set of bundles, and the report of what a catalog is becoming. Open it for anything done to a catalog, never for anything done to a project.
