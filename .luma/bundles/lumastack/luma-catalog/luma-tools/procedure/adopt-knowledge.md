@@ -1,5 +1,6 @@
 ---
-type: workflow
+type: procedure
+type_version: "0.0.1"
 title: Adopt knowledge into a project
 description: Take bundles from a catalog into a repository and make an agent aware of them. Use when setting a project up, when adding a capability, or when an agent keeps needing to be told where to look.
 ---
@@ -9,9 +10,9 @@ description: Take bundles from a catalog into a repository and make an agent awa
 **The whole loop is three commands**, and the third is the one people forget.
 
 ```bash
-luma-foreman adopt --list --from https://github.com/LumaStack/luma-catalog
-luma-foreman adopt luma/decision-records --from https://github.com/LumaStack/luma-catalog
-luma-foreman outfit
+luma-foreman get --list --from https://github.com/LumaStack/luma-catalog
+luma-foreman get lumastack/luma-catalog/decision-records --from https://github.com/LumaStack/luma-catalog
+luma-foreman apply
 ```
 
 ## 1. See what is on offer
@@ -43,21 +44,28 @@ no network, and it is the difference between this and a package cache.
 ## 3. Project it, or nothing changes
 
 ```bash
-luma-foreman outfit
+luma-foreman apply
 ```
 
 **Adoption puts knowledge in the repository; nothing yet puts it in front of an
-agent.** `outfit` writes a skill per workflow and an index of everything adopted
+agent.** `apply` writes a skill per procedure and an index of everything adopted
 into `CLAUDE.md`.
 
-**A bundle adopted and never projected is the failure that reads green from
+**A bundle taken and never applied is the failure that reads green from
 every angle** — the directory is there, the checksum matches, the report is
-clean, and no agent has ever seen it. `inspect` reports it; running `outfit`
+clean, and no agent has ever seen it. `inspect` reports it; running `apply`
 prevents it.
 
 Everything it writes is generated. Commit it or ignore it, but regenerate rather
 than editing. Only the region between `luma:begin` and `luma:end` in `CLAUDE.md`
 is touched, so a hand-written file keeps the rest.
+
+**When git asks you to resolve a conflict in one of them, run `apply` instead.**
+Two branches that both adopted something will both have rewritten `CLAUDE.md`,
+the skills and `routing.toml`, so a conflict there is normal rather than a
+warning. **Resolving it by hand produces a file that is wrong in a way nothing
+reports** — it survives review, and the next `apply` silently discards it.
+Take either side, re-run, commit what the tool wrote.
 
 ## 4. Keep it honest
 
@@ -69,12 +77,12 @@ Three ways a copy stops being what you adopted: **edited** in place, **missing**
 from disk, and **adopted but reaching no agent**.
 
 **It cannot tell you whether a newer version exists.** That needs the catalog,
-and inspection runs offline by design. Re-run `adopt` to find out.
+and inspection runs offline by design. Re-run `get` to find out.
 
 ## When a bundle is nearly right
 
 **Do not edit it.** The next adoption discards the change and upstream never
-learns anybody wanted it — `adopt` refuses rather than overwriting, which is how
+learns anybody wanted it — `get` refuses rather than overwriting, which is how
 you find out.
 
 Two honest options. **Send it upstream**, to the catalog it came from, so every
@@ -84,7 +92,7 @@ and yours to maintain.
 
 ## Upgrading
 
-Re-run `adopt`. A newer version is an upgrade and is reported as one; the same
+Re-run `get`. A newer version is an upgrade and is reported as one; the same
 version is a no-op. **Read what changed before committing** — for prose, a
 two-character diff can reverse a rule, so the version tier is a signal rather
 than a guarantee.

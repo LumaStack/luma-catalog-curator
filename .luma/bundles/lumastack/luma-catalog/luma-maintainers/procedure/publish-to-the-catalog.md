@@ -1,5 +1,6 @@
 ---
-type: workflow
+type: procedure
+type_version: "0.0.1"
 title: Publish a bundle to the universal catalog
 description: Add or change a bundle in luma-catalog and get the version honest. Use when promoting something out of a project, or changing anything already published.
 ---
@@ -119,6 +120,6 @@ rather than after it — after it, the thing is published.
 Merge commits rather than squash or rebase — the commit message is where the
 rationale lives, and squashing discards it.
 
-**Nothing notifies anybody.** Adopters find a newer version by running `adopt`
+**Nothing notifies anybody.** Adopters find a newer version by running `get`
 again, and no mechanism tells them to. That is a known hole rather than a
 design.

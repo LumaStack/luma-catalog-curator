@@ -1,13 +1,14 @@
 ---
-type: workflow
+type: procedure
+type_version: "0.0.1"
 title: Change a type more than one tool depends on
-description: Alter a shared type without making every tool upgrade at once. Use before touching anything in luma/luma-types, or any type a second consumer already reads.
+description: Alter a shared type without making every tool upgrade at once. Use before touching anything in lumastack/luma-catalog/luma-types, or any type a second consumer already reads.
 ---
 
 # Change a type more than one tool depends on
 
 **A breaking change is never one release. It is three**, and getting that
-backwards is the mistake this workflow exists to prevent.
+backwards is the mistake this procedure exists to prevent.
 
 ## 1. Is it actually breaking?
 

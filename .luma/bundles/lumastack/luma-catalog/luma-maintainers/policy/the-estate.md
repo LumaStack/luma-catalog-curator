@@ -1,9 +1,9 @@
 ---
 type: policy
+type_version: "0.0.1"
 title: The estate, and what each repository owns
 description: The six repositories, the boundary each one defends, and the rule that decides where a new thing goes. Read before adding anything to any of them.
-matches:
-  - topic: deciding which repository a new thing belongs in
+matches: eager
 ---
 
 # The estate, and what each repository owns
@@ -17,7 +17,7 @@ day and expensive later.
 | **`luma-knowledge-format`** | the specification | documents, bundles, types. **Nothing about distribution** |
 | **`luma-catalog`** | the universal catalog | published bundles. **No executable code** |
 | **`luma-leader`** | the organization's headquarters | decisions, design drafts, cross-project reasoning |
-| **`luma-foreman`** | the project-side engine | adoption, projection, inspection |
+| **`luma-foreman`** | the project-side engine | getting, applying, inspecting |
 | **`luma-clarify`** | ambiguity in written requirements | its own domain entirely |
 | **`luma-backlog`** | intended work | its own domain entirely |
 
@@ -36,14 +36,14 @@ does it run**.
 
 **The format must not learn about our distribution model.** It defines the
 Bundle because its own machinery needs one — a Document ID is a path within a
-Bundle, and types resolve from a Bundle's `_types/`. It knows nothing of
+Bundle, and types resolve from a Bundle's `type_definitions/`. It knows nothing of
 catalogs, adoption or projects, and a change that would teach it any of those is
 in the wrong repository.
 
 **A built-in type takes a word from everyone, permanently.** The bar is not
 importance: *"a consumer that ignored it would be broken"* means broken as a
 reader of the format, not broken as a user of our tools. `luma/project` and
-`luma/catalog` both failed that bar and live in the `luma/luma-types` bundle
+`luma/catalog` both failed that bar and live in the `lumastack/luma-catalog/luma-types` bundle
 instead. **Importance is what a namespace is for.**
 
 **The catalog holds no executable code.** A catalog is copied from by agents, and
@@ -88,16 +88,16 @@ trees in one repository with nothing keeping them in step — and the drift chec
 cannot help, because it catches an *edited* copy rather than an *outdated* one.
 
 **The cost is real and is accepted.** An agent working in a catalog gets no
-generated index and no skills, because `outfit` projects what a project
+generated index and no skills, because `apply` projects what a project
 *adopted* and a catalog adopted nothing. It has to be pointed at
 `catalog/bundles/` by hand.
 
 **Projecting what a repository publishes is the missing feature**, and it is not
-as simple as it looks: this catalog publishes seventeen bundles and works by
-about three, so projecting all of them would be a worse problem than the
-duplication it replaced. What is missing is the adopter's own selection — the
-same question `preload_default` answers for adopted bundles — and inventing it
-in passing would be worse than the gap.
+as simple as it looks: this catalog publishes nineteen bundles and works by about
+three, so projecting all of them would be a worse problem than the duplication it
+replaced. What is missing is the adopter's own selection — a bundle-level answer
+to *which of these do I want in front of me*, which nothing in the format
+provides — and inventing it in passing would be worse than the gap.
 
 ## You are also an ordinary user
 
